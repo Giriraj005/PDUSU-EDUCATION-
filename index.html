@@ -215,4 +215,225 @@
   </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎓 PDUSU EDUCATION</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8fafc;
+      margin: 0;
+      padding: 0;
+      color: #0f172a;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      padding: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    header img {
+      height: 60px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+    header p {
+      margin: 0;
+      font-size: 14px;
+      color: #475569;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 15px;
+      background: #e2e8f0;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background: #1e40af;
+    }
+    .content {
+      padding: 20px;
+    }
+    .semester {
+      display: none;
+      animation: fade 0.3s ease;
+    }
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .class-card {
+      background: white;
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+      margin-bottom: 15px;
+    }
+    .class-card h3 {
+      margin: 0;
+    }
+    .class-card a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #e2e8f0;
+      color: #475569;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="PDUSU-logo.png" alt="PDUSU Logo" onerror="this.style.display='none'">
+    <div>
+      <h1>🎓 PDUSU EDUCATION</h1>
+      <p>Pandit Deendayal Upadhyaya Shekhawati University, Sikar</p>
+    </div>
+  </header>
+
+  <nav>
+    <button onclick="showSemester(1)">Semester 1</button>
+    <button onclick="showSemester(2)">Semester 2</button>
+    <button onclick="showSemester(3)">Semester 3</button>
+    <button onclick="showSemester(4)">Semester 4</button>
+    <button onclick="showSemester(5)">Semester 5</button>
+    <button onclick="showSemester(6)">Semester 6</button>
+  </nav>
+
+  <div class="content">
+
+    <div id="sem1" class="semester">
+      <h2>📘 Semester 1</h2>
+      <div class="class-card">
+        <h3>Class 1: Economics Basics</h3>
+        <p><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">▶ Watch on YouTube</a></p>
+        <p><a href="notes/economics.pdf" target="_blank">📄 Download Notes (PDF)</a></p>
+      </div>
+    </div>
+
+    <div id="sem2" class="semester">
+      <h2>📗 Semester 2</h2>
+      <div class="class-card">
+        <h3>Class 1: Business Studies</h3>
+        <p><a href="https://www.youtube.com/" target="_blank">▶ Watch on YouTube</a></p>
+        <p><a href="notes/business.pdf" target="_blank">📄 Download Notes</a></p>
+      </div>
+    </div>
+
+    <div id="sem3" class="semester">
+      <h2>📙 Semester 3</h2>
+      <p>Classes will be added soon...</p>
+    </div>
+
+    <div id="sem4" class="semester">
+      <h2>📒 Semester 4</h2>
+      <p>Classes will be added soon...</p>
+    </div>
+
+    <div id="sem5" class="semester">
+      <h2>📕 Semester 5</h2>
+      <p>Classes will be added soon...</p>
+    </div>
+
+    <div id="sem6" class="semester">
+      <h2>📚 Semester 6</h2>
+      <p>Classes will be added soon...</p>
+    </div>
+
+  </div>
+
+  <footer>
+    © 2025 PDUSU EDUCATION | Designed for University Students
+  </footer>
+
+  <script>
+    function showSemester(n) {
+      const all = document.querySelectorAll(".semester");
+      all.forEach(s => s.style.display = "none");
+      document.getElementById("sem" + n).style.display = "block";
+    }
+
+    // Default open Semester 1
+    showSemester(1);
+  </script>
+</body>
+</html>
+<!-- Add this inside <body>, maybe above <footer> -->
+<div class="content">
+  <h2>⚙️ Admin Panel</h2>
+  <div class="class-card">
+    <label>Semester:
+      <select id="adminSemester">
+        <option value="1">Semester 1</option>
+        <option value="2">Semester 2</option>
+        <option value="3">Semester 3</option>
+        <option value="4">Semester 4</option>
+        <option value="5">Semester 5</option>
+        <option value="6">Semester 6</option>
+      </select>
+    </label>
+    <br><br>
+    <label>Class Name: <input type="text" id="adminClassName" placeholder="Economics Basics"></label>
+    <br><br>
+    <label>YouTube Link: <input type="text" id="adminClassLink" placeholder="https://youtube.com/..."></label>
+    <br><br>
+    <label>PDF URL: <input type="text" id="adminPDFLink" placeholder="notes/economics.pdf"></label>
+    <br><br>
+    <button onclick="addClass()">Add Class</button>
+  </div>
+</div>
+
+<script>
+function addClass() {
+  const sem = document.getElementById("adminSemester").value;
+  const name = document.getElementById("adminClassName").value;
+  const link = document.getElementById("adminClassLink").value;
+  const pdf = document.getElementById("adminPDFLink").value;
+
+  if(!name || !link || !pdf) {
+    alert("Please fill all fields!");
+    return;
+  }
+
+  const semDiv = document.getElementById("sem" + sem);
+
+  const card = document.createElement("div");
+  card.className = "class-card";
+  card.innerHTML = `
+    <h3>Class: ${name}</h3>
+    <p><a href="${link}" target="_blank">▶ Watch on YouTube</a></p>
+    <p><a href="${pdf}" target="_blank">📄 Download Notes</a></p>
+  `;
+
+  semDiv.appendChild(card);
+  alert("Class added successfully!");
+  
+  // Optionally, clear inputs
+  document.getElementById("adminClassName").value = "";
+  document.getElementById("adminClassLink").value = "";
+  document.getElementById("adminPDFLink").value = "";
+}
+</script>
 
