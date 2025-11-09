@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🎓 PDUSU EDUCATION</title>
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+
 <style>
 :root{--bg:#f8fafc;--card:#fff;--muted:#475569;--accent:#2563eb}
 body{font-family:Arial,sans-serif;margin:0;background:var(--bg);color:#0f172a}
@@ -77,6 +82,7 @@ input[type="text"],select,input[type="url"]{width:100%;padding:10px;border:1px s
   <div id="sem4" class="semester"><h2>📒 Semester 4</h2><div class="semester-columns"></div></div>
   <div id="sem5" class="semester"><h2>📕 Semester 5</h2><div class="semester-columns"></div></div>
   <div id="sem6" class="semester"><h2>📚 Semester 6</h2><div class="semester-columns"></div></div>
+
 </div>
 
 <footer>© 2025 PDUSU EDUCATION | Designed for University Students By GIRIRAJPAREEK</footer>
@@ -93,7 +99,7 @@ input[type="text"],select,input[type="url"]{width:100%;padding:10px;border:1px s
 
 <script>
 // ---------- Config ----------
-const PASSWORD_SHA256 = "8abf09e0892662c4b8945de98ac87f804fdf1bc1e8545ecebb570683a68b4928"; // jonga 9828
+const PASSWORD_SHA256 = "8abf09e0892662c4b8945de98ac87f804fdf1bc1e8545ecebb570683a68b4928"; // 9828
 const STORAGE_KEY = "pdusu_classes_v3";
 
 // ---------- Helpers ----------
@@ -103,10 +109,8 @@ async function sha256Hex(input){
   const hash = await crypto.subtle.digest("SHA-256", data);
   return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
-
 function loadClasses(){ return JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]"); }
 function saveClasses(list){ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
-
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function escapeAttr(s){ return String(s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
@@ -120,7 +124,7 @@ function renderAll(){
       const col=document.createElement("div"); col.className="column";
       col.innerHTML=`<h3>${stream}</h3>`;
       const items=loadClasses().filter(c=>c.semester===s && c.stream===stream);
-      if(items.length===0){ col.innerHTML+=`<p class="note">No classes yet.</p>`; }
+      if(items.length===0){ col.innerHTML+=`<p class='note'>No classes yet.</p>`; }
       items.forEach(it=>{
         const card=document.createElement("div"); card.className="class-card";
         let html="";
@@ -309,9 +313,6 @@ function wipeData(){
   }
 }
 </script>
-  <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
-
 
 </body>
 </html>
