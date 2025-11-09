@@ -11,7 +11,7 @@
 
 <style>
 :root{--bg:#f8fafc;--card:#fff;--muted:#475569;--accent:#2563eb}
-body{font-family:Arial,sans-serif;margin:0;background:var(--bg);color:#0f172a}
+body{font-family:Arial,sans-serif;margin:0;background:var(--bg);color:#0f172a;position:relative;min-height:100vh;}
 header{display:flex;align-items:center;gap:12px;background:#fff;padding:16px;box-shadow:0 2px 6px rgba(0,0,0,.08);}
 header img{height:60px;cursor:pointer}
 header h1{margin:0;font-size:22px}
@@ -37,23 +37,21 @@ input[type="text"],select,input[type="url"]{width:100%;padding:10px;border:1px s
 .danger{background:#ef4444}
 .small{font-size:13px;padding:8px 10px;border-radius:6px}
 .note{color:#6b7280;font-size:13px;margin-top:8px}
-/* Red admin ball */
+/* Red admin ball top-right */
 #adminBall {
-  width: 20px;
-  height: 20px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   background: red;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
+  position: absolute;
+  top: 15px;
+  right: 15px;
   cursor: pointer;
-  z-index: 9999;
+  z-index: 10000;
   box-shadow: 0 0 6px rgba(0,0,0,0.3);
+  pointer-events:auto;
 }
-#adminBall:hover {
-  transform: scale(1.2);
-  transition: transform 0.15s;
-}
+#adminBall:hover{transform: scale(1.2); transition: transform 0.15s;}
 </style>
 </head>
 <body>
@@ -82,7 +80,7 @@ input[type="text"],select,input[type="url"]{width:100%;padding:10px;border:1px s
   <div id="sem4" class="semester"><h2>📒 Semester 4</h2><div class="semester-columns"></div></div>
   <div id="sem5" class="semester"><h2>📕 Semester 5</h2><div class="semester-columns"></div></div>
   <div id="sem6" class="semester"><h2>📚 Semester 6</h2><div class="semester-columns"></div></div>
-
+  <p class="note">Click the red ball or triple-click the logo to access the admin panel.</p>
 </div>
 
 <footer>© 2025 PDUSU EDUCATION | Designed for University Students By GIRIRAJPAREEK</footer>
@@ -94,7 +92,7 @@ input[type="text"],select,input[type="url"]{width:100%;padding:10px;border:1px s
   </div>
 </div>
 
-<!-- Hidden red ball -->
+<!-- Admin ball -->
 <div id="adminBall" title="Admin Access"></div>
 
 <script>
@@ -151,6 +149,7 @@ renderAll();
 const modalBackdrop=document.getElementById("modalBackdrop");
 const modalContent=document.getElementById("modalContent");
 
+// Admin via red ball
 document.getElementById("adminBall").addEventListener("click", async ()=>{
   const pwd = prompt("Enter Admin Password:");
   if(!pwd) return;
@@ -159,9 +158,26 @@ document.getElementById("adminBall").addEventListener("click", async ()=>{
   else{ alert("Incorrect password"); }
 });
 
+// Admin via triple-click logo
+let clickCount=0;
+document.getElementById('logo').addEventListener('click', async ()=>{
+  clickCount++;
+  if(clickCount===3){
+    clickCount=0;
+    const pwd=prompt("Enter Admin Password:");
+    if(!pwd) return;
+    const hash = await sha256Hex(pwd);
+    if(hash===PASSWORD_SHA256) openAdminPanel();
+    else alert("Incorrect password");
+  }
+  setTimeout(()=>clickCount=0,1500);
+});
+
+// Show modal
 function showModal(html){ modalContent.innerHTML=html; modalBackdrop.style.display="flex"; }
 function closeModal(){ modalBackdrop.style.display="none"; }
 
+// ---------- Admin Panel Logic ----------
 function openAdminPanel(){
   const classes = loadClasses();
   let listHtml="";
