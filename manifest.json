@@ -1,6 +1,7 @@
 {
   "name": "PDUSU Education",
   "short_name": "PDUSU",
+  "description": "Pandit Deendayal Upadhyaya Shekhawati University Student Portal: Access semester-wise classes, YouTube lectures, and PDF notes.",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#f8fafc",
@@ -9,6 +10,11 @@
     {
       "src": "PDUSU-logo.png",
       "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "PDUSU-logo.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
