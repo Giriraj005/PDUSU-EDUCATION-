@@ -45,3 +45,174 @@
   </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin | PDUSU EDUCATION</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f4f6fb; margin:0; padding:20px; }
+    .wrap { max-width:760px; margin:28px auto; }
+    header { display:flex; gap:12px; align-items:center; background:white; padding:12px 16px; border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+    header img { height:56px; width:auto; }
+    header .title { font-size:18px; font-weight:700; color:#0f172a; }
+    header .subtitle { display:block; font-size:13px; color:#475569; font-weight:500; }
+
+    .card { background:white; padding:18px; border-radius:8px; margin-top:18px; box-shadow:0 1px 6px rgba(0,0,0,0.06); }
+    .center { text-align:center; }
+
+    input[type="password"], input[type="text"], input[type="file"] {
+      width:100%; padding:10px 12px; border:1px solid #e6e9ef; border-radius:6px; font-size:15px; box-sizing:border-box;
+    }
+    label { font-size:14px; color:#334155; margin-top:8px; display:block; }
+    button { margin-top:12px; padding:10px 14px; background:#2563eb; color:white; border:none; border-radius:6px; cursor:pointer; }
+    button.secondary { background:#64748b; }
+    .small { font-size:13px; color:#475569; margin-top:8px; }
+    .hint { font-size:13px; color:#94a3b8; margin-top:6px; }
+
+    /* Admin area */
+    #adminBox { display:none; }
+    .row { display:flex; gap:12px; }
+    .col { flex:1; }
+    .note { font-size:13px; color:#64748b; margin-top:8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <img src="assets/PDUSU-logo.png" alt="PDUSU Logo" onerror="this.style.display='none'">
+      <div>
+        <div class="title">🎓 PDUSU EDUCATION</div>
+        <div class="subtitle">Pandit Deendayal Upadhyaya Shekhawati University, Sikar</div>
+      </div>
+    </header>
+
+    <!-- LOGIN CARD (visible) -->
+    <div id="loginBox" class="card">
+      <h3 class="center">Admin Login</h3>
+      <p class="hint center">Enter the admin password to open the upload panel.</p>
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="Enter admin password" />
+      <div style="display:flex; gap:10px; margin-top:12px;">
+        <button onclick="checkPassword()">Login</button>
+        <button class="secondary" onclick="showInstructions()">Help</button>
+      </div>
+      <p class="small">Default admin password is <strong>PDUSU9828</strong> (case-sensitive). You can change it inside this file.</p>
+    </div>
+
+    <!-- ADMIN CARD (hidden until correct password) -->
+    <div id="adminBox" class="card">
+      <h3>Upload New Class</h3>
+
+      <label for="title">Class Title</label>
+      <input id="title" type="text" placeholder="e.g. Class 1: Economics Basics" />
+
+      <label for="youtube">YouTube Link</label>
+      <input id="youtube" type="text" placeholder="Full YouTube URL (https://...)" />
+
+      <label for="pdfFile">Select PDF (notes)</label>
+      <input id="pdfFile" type="file" accept=".pdf" />
+
+      <div style="display:flex; gap:10px;">
+        <button onclick="uploadAndAddClass()">Add Class (Download data.json + PDF)</button>
+        <button class="secondary" onclick="logoutAdmin()">Logout</button>
+      </div>
+
+      <p id="msg" class="note"></p>
+      <p class="small">After upload: two files will be downloaded — the updated <code>data.json</code> and the chosen PDF. Replace those in your project folder (put PDF inside <code>notes/</code>) and re-upload to GitHub Pages.</p>
+    </div>
+  </div>
+
+  <script>
+    // === CHANGE THIS PASSWORD IF YOU WANT ===
+    const ADMIN_PASS = "PDUSU9828";
+
+    function showInstructions() {
+      alert("Open admin.html, enter the password, fill Title + YouTube link + select PDF, then click 'Add Class'. Two files will download — move them to your project folder and push to GitHub.");
+    }
+
+    function checkPassword() {
+      const pass = document.getElementById("password").value.trim();
+      if (pass === ADMIN_PASS) {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("adminBox").style.display = "block";
+        // clear password field
+        document.getElementById("password").value = "";
+      } else {
+        alert("❌ Wrong password. Please try again.");
+      }
+    }
+
+    function logoutAdmin() {
+      document.getElementById("adminBox").style.display = "none";
+      document.getElementById("loginBox").style.display = "block";
+      document.getElementById("msg").innerHTML = "";
+    }
+
+    // Read existing data.json (if available) or create default structure
+    async function fetchDataJson() {
+      try {
+        const res = await fetch("data.json");
+        if (!res.ok) throw new Error("no data.json");
+        return await res.json();
+      } catch (e) {
+        return { classes: [] };
+      }
+    }
+
+    // Upload: will download updated data.json and the selected PDF file
+    async function uploadAndAddClass() {
+      const title = document.getElementById("title").value.trim();
+      const youtube = document.getElementById("youtube").value.trim();
+      const pdfInput = document.getElementById("pdfFile");
+      const msg = document.getElementById("msg");
+
+      if (!title || !youtube || pdfInput.files.length === 0) {
+        alert("Please fill Title, YouTube link and select a PDF file.");
+        return;
+      }
+
+      const pdfFile = pdfInput.files[0];
+      const pdfFileName = pdfFile.name;
+
+      // Load existing data.json
+      const data = await fetchDataJson();
+      // Prepend new class
+      data.classes.unshift({
+        title: title,
+        youtube: youtube,
+        pdf: "notes/" + pdfFileName,
+        createdAt: new Date().toISOString(),
+        createdBy: "admin"
+      });
+
+      // Prepare and trigger download for updated data.json
+      const dataBlob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const dataUrl = URL.createObjectURL(dataBlob);
+      const a1 = document.createElement("a");
+      a1.href = dataUrl;
+      a1.download = "data.json";
+      a1.click();
+
+      // Prepare and trigger download for PDF file (using FileReader to get data URL)
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const pdfDataUrl = e.target.result;
+        const a2 = document.createElement("a");
+        a2.href = pdfDataUrl;
+        a2.download = pdfFileName;
+        a2.click();
+
+        msg.innerHTML = "✅ Done. Downloaded <strong>data.json</strong> and <strong>" + pdfFileName + "</strong>.<br>Place the PDF in the <code>notes/</code> folder and replace <code>data.json</code> in your project.";
+        // clear fields
+        document.getElementById("title").value = "";
+        document.getElementById("youtube").value = "";
+        pdfInput.value = "";
+      };
+      reader.readAsDataURL(pdfFile);
+    }
+  </script>
+</body>
+</html>
+
