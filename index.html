@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>🎓 PDUSU EDUCATION</title>
+<style>
+  :root{--bg:#f8fafc;--card:#fff;--muted:#475569;--accent:#2563eb}
+  body{font-family:Inter,system-ui,Arial;margin:0;background:var(--bg);color:#0f172a}
+  header{display:flex;align-items:center;gap:12px;background:#fff;padding:16px;box-shadow:0 2px 6px rgba(0,0,0,.08);position:relative}
+  header img{height:60px;cursor:pointer}
+  header h1{margin:0;font-size:22px}
+  header p{margin:0;font-size:14px;color:var(--muted)}
+  nav{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;padding:15px;background:#e2e8f0}
+  button, .btn{padding:10px 20px;border:none;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer;transition:.15s}
+  button:hover,.btn:hover{background:#1e40af}
+  .content{padding:20px;max-width:980px;margin:0 auto}
+  .semester{display:none;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .class-card{background:var(--card);border-radius:10px;padding:14px;box-shadow:0 1px 5px rgba(0,0,0,.07);margin-bottom:12px}
+  .class-card h3{margin:0 0 6px 0}
+  .class-card a{color:var(--accent);text-decoration:none}
+  footer{text-align:center;padding:20px;background:#e2e8f0;color:var(--muted);font-size:14px}
+  /* Admin modal */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:50}
+  .modal{background:#fff;border-radius:10px;padding:18px;width:90%;max-width:520px;box-shadow:0 8px 30px rgba(2,6,23,.2)}
+  label{display:block;margin-top:8px;font-size:14px}
+  input[type="text"],select,input[type="url"]{width:100%;padding:10px;border:1px solid #e6e9ef;border-radius:8px;margin-top:6px}
+  .admin-controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .hidden-trigger{position:absolute;right:8px;top:8px;width:48px;height:48px;opacity:.02;cursor:pointer}
+  .danger{background:#ef4444}
+  .small{font-size:13px;padding:8px 10px;border-radius:6px}
+  .note{color:#6b7280;font-size:13px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<header>
+  <img id="logo" src="PDUSU-logo.png" alt="PDUSU Logo" onerror="this.style.opacity='.25'">
+  <div>
+    <h1>🎓 PDUSU EDUCATION</h1>
+    <p>Pandit Deendayal Upadhyaya Shekhawati University, Sikar</p>
+  </div>
+
+  <!-- invisible area used to open admin (also supports keyboard). Will not be obvious on page -->
+  <div id="secret" class="hidden-trigger" title="hidden admin"></div>
+</header>
+
+<nav>
+  <button onclick="showSemester(1)">Semester 1</button>
+  <button onclick="showSemester(2)">Semester 2</button>
+  <button onclick="showSemester(3)">Semester 3</button>
+  <button onclick="showSemester(4)">Semester 4</button>
+  <button onclick="showSemester(5)">Semester 5</button>
+  <button onclick="showSemester(6)">Semester 6</button>
+</nav>
+
+<div class="content">
+  <!-- Student-facing semester containers (content injected by JS) -->
+  <div id="sem1" class="semester"><h2>📘 Semester 1</h2><div class="semester-list"></div></div>
+  <div id="sem2" class="semester"><h2>📗 Semester 2</h2><div class="semester-list"></div></div>
+  <div id="sem3" class="semester"><h2>📙 Semester 3</h2><div class="semester-list"></div></div>
+  <div id="sem4" class="semester"><h2>📒 Semester 4</h2><div class="semester-list"></div></div>
+  <div id="sem5" class="semester"><h2>📕 Semester 5</h2><div class="semester-list"></div></div>
+  <div id="sem6" class="semester"><h2>📚 Semester 6</h2><div class="semester-list"></div></div>
+
+  <p class="note">Tip: Click the logo 7 times or press <strong>Ctrl + Shift + A</strong> to open the hidden admin login.</p>
+</div>
+
+<footer>© 2025 PDUSU EDUCATION | Designed for University Students</footer>
+
+<!-- Admin modal (hidden by default) -->
+<div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
+  <div class="modal" role="document">
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+/*
+  Client-side admin for a single file site.
+  - Data stored in localStorage key "pdusu_classes" as array of objects:
+    { id, semester, class_name, youtube_link, pdf_url, created_at }
+  - Hidden admin trigger: logo clicks or Ctrl+Shift+A
+  - Password: compare SHA-256 to stored hash.
+  NOTE: This is client-side only. A determined person can view source and localStorage.
+*/
+
+// ---------- configuration ----------
+const PASSWORD_SHA256 = "8abf09e0892662c4b8945de98ac87f804fdf1bc1e8545ecebb570683a68b4928";
+// This is SHA-256("jonga 9828") — user-provided. Stored as hash to avoid plaintext in localStorage.
+const STORAGE_KEY = "pdusu_classes_v1";
+// -----------------------------------
+
+// utility: compute sha-256 hex for input string using Web Crypto
+async function sha256Hex(input){
+  const enc = new TextEncoder();
+  const data = enc.encode(input);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  const bytes = Array.from(new Uint8Array(hash));
+  return bytes.map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// storage helpers
+function loadClasses(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  }catch(e){ return []; }
+}
+function saveClasses(list){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+// render semester lists for students
+function renderAll(){
+  const classes = loadClasses();
+  for(let s=1;s<=6;s++){
+    const container = document.querySelector("#sem"+s+" .semester-list");
+    container.innerHTML = "";
+    const items = classes.filter(c => c.semester === s).sort((a,b)=> new Date(b.created_at)-new Date(a.created_at));
+    if(items.length===0){
+      container.innerHTML = "<p class='note'>Classes will be added soon...</p>";
+      continue;
+    }
+    items.forEach(it=>{
+      const card = document.createElement("div");
+      card.className = "class-card";
+      card.innerHTML = `
+        <h3>${escapeHtml(it.class_name)}</h3>
+        <p><a href="${escapeAttr(it.youtube_link)}" target="_blank">▶ Watch on YouTube</a></p>
+        <p><a href="${escapeAttr(it.pdf_url)}" target="_blank">📄 Download Notes (PDF)</a></p>
+      `;
+      container.appendChild(card);
+    });
+  }
+}
+
+// show a semester
+function showSemester(n){
+  document.querySelectorAll(".semester").forEach(s => s.style.display = "none");
+  const el = document.getElementById("sem"+n);
+  if(el) el.style.display = "block";
+}
+showSemester(1);
+renderAll();
+
+// ---------- Admin UI & logic ----------
+const secret = document.getElementById("secret");
+const logo = document.getElementById("logo");
+const modalBackdrop = document.getElementById("modalBackdrop");
+const modalContent = document.getElementById("modalContent");
+
+let clickCount = 0;
+secret.addEventListener("click", ()=> {
+  clickCount++;
+  if(clickCount >= 7) openPasswordPrompt();
+  // reset after short time
+  setTimeout(()=> clickCount=0, 1200);
+});
+logo.addEventListener("dblclick", ()=>{ /* do nothing visible */ });
+
+// keyboard shortcut: Ctrl+Shift+A
+document.addEventListener("keydown", e=>{
+  if(e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+    e.preventDefault();
+    openPasswordPrompt();
+  }
+});
+
+// open password prompt modal
+function openPasswordPrompt(){
+  showModal(`
+    <h3>Admin Login</h3>
+    <label>Enter password:
+      <input id="pwdInput" type="text" autocomplete="off" placeholder="password">
+    </label>
+    <div class="admin-controls">
+      <button class="btn" onclick="attemptLogin()">Enter</button>
+      <button class="small" onclick="closeModal()">Cancel</button>
+    </div>
+    <p class="note">This admin is local to this browser. For secure remote admin, use a server-side backend.</p>
+  `);
+  setTimeout(()=>document.getElementById("pwdInput").focus(),50);
+}
+
+// attempt login
+async function attemptLogin(){
+  const pw = document.getElementById("pwdInput").value || "";
+  const h = await sha256Hex(pw);
+  if(h === PASSWORD_SHA256){
+    openAdminPanel();
+  } else {
+    alert("Incorrect password");
+  }
+}
+
+// admin panel UI
+function openAdminPanel(){
+  const classes = loadClasses();
+  let listHtml = "";
+  if(classes.length===0) listHtml = "<p class='note'>No classes yet.</p>";
+  else {
+    listHtml = '<div style="max-height:220px;overflow:auto;margin-top:8px">';
+    classes.slice().reverse().forEach(c=>{
+      listHtml += `
+        <div style="padding:8px;border-bottom:1px solid #eef2f7">
+          <strong>Sem ${c.semester}</strong> — ${escapeHtml(c.class_name)}<br>
+          <small><a href="${escapeAttr(c.youtube_link)}" target="_blank">YouTube</a> · <a href="${escapeAttr(c.pdf_url)}" target="_blank">PDF</a></small>
+          <div style="margin-top:6px">
+            <button class="small" onclick="editClass('${c.id}')">Edit</button>
+            <button class="small danger" onclick="deleteClass('${c.id}')">Delete</button>
+          </div>
+        </div>
+      `;
+    });
+    listHtml += "</div>";
+  }
+
+  showModal(`
+    <h3>Admin Panel</h3>
+    <form id="adminForm" onsubmit="return false;">
+      <label>Semester
+        <select id="admSemester">
+          <option value="1">Semester 1</option>
+          <option value="2">Semester 2</option>
+          <option value="3">Semester 3</option>
+          <option value="4">Semester 4</option>
+          <option value="5">Semester 5</option>
+          <option value="6">Semester 6</option>
+        </select>
+      </label>
+      <label>Class Name
+        <input id="admClassName" type="text" placeholder="Economics Basics" required>
+      </label>
+      <label>YouTube Link
+        <input id="admYouTube" type="url" placeholder="https://www.youtube.com/watch?v=..." required>
+      </label>
+      <label>PDF URL (upload file to your hosting and paste URL here)
+        <input id="admPdfUrl" type="url" placeholder="https://example.com/notes/economics.pdf" required>
+      </label>
+      <div class="admin-controls">
+        <button class="btn" onclick="saveNewClass()">Add / Save</button>
+        <button class="small" onclick="closeModal();showModalContent()">Close</button>
+      </div>
+    </form>
+    <hr>
+    <h4>Existing classes</h4>
+    ${listHtml}
+    <div style="margin-top:8px"><button class="small danger" onclick="wipeData()">Wipe all local data</button></div>
+  `);
+}
+
+// modal helpers
+function showModal(html){
+  modalContent.innerHTML = html;
+  modalBackdrop.style.display = "flex";
+  modalBackdrop.setAttribute("aria-hidden","false");
+}
+function closeModal(){
+  modalBackdrop.style.display = "none";
+  modalBackdrop.setAttribute("aria-hidden","true");
+}
+function showModalContent(){ /* keep admin open: re-open admin panel */ openAdminPanel(); }
+
+// save new class (or update)
+function saveNewClass(){
+  const sem = parseInt(document.getElementById("admSemester").value);
+  const name = document.getElementById("admClassName").value.trim();
+  const yt = document.getElementById("admYouTube").value.trim();
+  const pdf = document.getElementById("admPdfUrl").value.trim();
+  if(!name || !yt || !pdf){ alert("Please fill all fields"); return; }
+  const list = loadClasses();
+  // check if editing existing (we can store edit id in a hidden field)
+  const editId = document.getElementById("adminForm").getAttribute("data-edit-id");
+  if(editId){
+    const idx = list.findIndex(x => x.id === editId);
+    if(idx >= 0){
+      list[idx].semester = sem; list[idx].class_name = name; list[idx].youtube_link = yt; list[idx].pdf_url = pdf;
+      list[idx].created_at = new Date().toISOString();
+    }
+    document.getElementById("adminForm").removeAttribute("data-edit-id");
+  } else {
+    list.push({
+      id: crypto.randomUUID ? crypto.randomUUID() : 'id_'+Date.now(),
+      semester: sem,
+      class_name: name,
+      youtube_link: yt,
+      pdf_url: pdf,
+      created_at: new Date().toISOString()
+    });
+  }
+  saveClasses(list);
+  renderAll();
+  alert("Saved");
+  openAdminPanel();
+}
+
+// edit class by id
+function editClass(id){
+  const list = loadClasses();
+  const c = list.find(x => x.id === id);
+  if(!c) return alert("Not found");
+  showModal(`
+    <h3>Edit Class</h3>
+    <form id="adminForm" onsubmit="return false;" data-edit-id="${c.id}">
+      <label>Semester
+        <select id="admSemester">
+          <option ${c.semester===1?'selected':''} value="1">Semester 1</option>
+          <option ${c.semester===2?'selected':''} value="2">Semester 2</option>
+          <option ${c.semester===3?'selected':''} value="3">Semester 3</option>
+          <option ${c.semester===4?'selected':''} value="4">Semester 4</option>
+          <option ${c.semester===5?'selected':''} value="5">Semester 5</option>
+          <option ${c.semester===6?'selected':''} value="6">Semester 6</option>
+        </select>
+      </label>
+      <label>Class Name
+        <input id="admClassName" type="text" value="${escapeAttr(c.class_name)}" required>
+      </label>
+      <label>YouTube Link
+        <input id="admYouTube" type="url" value="${escapeAttr(c.youtube_link)}" required>
+      </label>
+      <label>PDF URL
+        <input id="admPdfUrl" type="url" value="${escapeAttr(c.pdf_url)}" required>
+      </label>
+      <div class="admin-controls">
+        <button class="btn" onclick="saveNewClass()">Save</button>
+        <button class="small" onclick="openAdminPanel()">Cancel</button>
+      </div>
+    </form>
+  `);
+}
+
+// delete class
+function deleteClass(id){
+  if(!confirm("Delete this class?")) return;
+  let list = loadClasses();
+  list = list.filter(x => x.id !== id);
+  saveClasses(list);
+  renderAll();
+  openAdminPanel();
+}
+
+// destructive: wipe all local data
+function wipeData(){
+  if(confirm("Remove ALL local classes? This cannot be undone.")){
+    localStorage.removeItem(STORAGE_KEY);
+    renderAll();
+    openAdminPanel();
+  }
+}
+
+// small helpers to avoid XSS (we're inserting untrusted text into innerHTML)
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s){
+  return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+</script>
+
+</body>
+</html>
