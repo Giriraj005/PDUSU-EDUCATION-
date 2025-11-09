@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDUSU EDUCATION</title>
+  <style>
+    body {font-family: Arial; background:#f4f6f9; margin:0;}
+    header {background:#2563eb; color:white; text-align:center; padding:20px;}
+    .container {max-width:800px; margin:20px auto; background:white; padding:20px; border-radius:10px;}
+    .class-item {border-bottom:1px solid #ddd; padding:10px 0;}
+    a.button {display:inline-block; background:#2563eb; color:white; padding:8px 12px; border-radius:5px; text-decoration:none;}
+    a.button:hover {background:#1e40af;}
+    footer {text-align:center; margin-top:30px; color:#777;}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎓 PDUSU EDUCATION</h1>
+    <p>Semester-wise YouTube Classes & PDF Notes</p>
+  </header>
+
+  <div class="container" id="classList">Loading classes...</div>
+
+  <footer>© 2025 PDUSU EDUCATION | Created by Giriraj Pareek</footer>
+
+  <script>
+    fetch("data.json")
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById("classList");
+        list.innerHTML = "";
+        data.classes.forEach(c => {
+          list.innerHTML += `
+            <div class="class-item">
+              <h3>${c.title}</h3>
+              <a href="${c.youtube}" class="button" target="_blank">🎥 Watch Video</a>
+              <a href="${c.pdf}" class="button" target="_blank">📄 Download Notes</a>
+            </div>`;
+        });
+      })
+      .catch(() => {
+        document.getElementById("classList").innerHTML = "No classes found.";
+      });
+  </script>
+</body>
+</html>
