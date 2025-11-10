@@ -17,11 +17,11 @@ header p{margin:0;font-size:14px;color:var(--muted);}
 nav{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;padding:15px;background:#e2e8f0;}
 button, .btn{padding:10px 20px;border:none;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer;transition:.15s;font-size:14px;}
 button:hover,.btn:hover{background:#1e40af;}
-.content{padding:20px;max-width:1200px;margin:0 auto;flex:1;}
+.content{padding:15px;max-width:1200px;margin:0 auto;flex:1;}
 .semester{display:none;animation:fadeSlide .3s ease;}
 @keyframes fadeSlide{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
-.semester-columns{display:flex;gap:12px;margin-top:15px;flex-wrap:wrap;}
-.column{flex:1;background:var(--card);padding:12px;border-radius:10px;box-shadow:0 1px 5px rgba(0,0,0,.07);min-width:200px;max-width:100%;}
+.semester-columns{display:flex;flex-wrap:wrap;gap:12px;margin-top:15px;}
+.column{flex:1 1 250px;background:var(--card);padding:12px;border-radius:10px;box-shadow:0 1px 5px rgba(0,0,0,.07);}
 .column h3{margin-top:0;color:var(--accent);}
 .class-card{background:#f1f5f9;border-radius:8px;padding:10px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
 .class-card a{color:var(--accent);text-decoration:none;word-break:break-word;}
@@ -41,6 +41,7 @@ input[type="text"],select,input[type="url"]{width:100%;padding:10px;border:1px s
 /* Responsive */
 @media(max-width:768px){
   .semester-columns{flex-direction:column;}
+  .column{flex:1 1 100%;}
   button, .btn, .footer-links a{width:100%;text-align:center;}
   header{flex-direction:column;align-items:flex-start;}
   header img{margin-bottom:8px;}
@@ -97,7 +98,12 @@ const PASSWORD_SHA256 = "8abf09e0892662c4b8945de98ac87f804fdf1bc1e8545ecebb57068
 const STORAGE_KEY = "pdusu_classes_v3";
 
 // ---------- Helpers ----------
-async function sha256Hex(input){const enc=new TextEncoder();const data=enc.encode(input);const hash=await crypto.subtle.digest("SHA-256",data);return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+async function sha256Hex(input){
+  const enc = new TextEncoder();
+  const data = enc.encode(input);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
 function loadClasses(){ return JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]"); }
 function saveClasses(list){ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -106,16 +112,17 @@ function escapeAttr(s){ return String(s||'').replace(/"/g,'&quot;').replace(/'/g
 // ---------- Render ----------
 function renderAll(){
   for(let s=1;s<=6;s++){
-    const container=document.querySelector("#sem"+s+" .semester-columns");
-    container.innerHTML="";
-    const streams=["BA","BSc","B.Com"];
+    const container = document.querySelector("#sem"+s+" .semester-columns");
+    container.innerHTML = "";
+    const streams = ["BA","BSc","B.Com"];
     streams.forEach(stream=>{
-      const col=document.createElement("div"); col.className="column";
-      col.innerHTML=`<h3>${stream}</h3>`;
-      const items=loadClasses().filter(c=>c.semester===s && c.stream===stream);
-      if(items.length===0){ col.innerHTML+=`<p class='note'>No classes yet.</p>`; }
+      const col = document.createElement("div");
+      col.className = "column";
+      col.innerHTML = `<h3>${stream}</h3>`;
+      const items = loadClasses().filter(c => Number(c.semester) === s && (c.stream || "") === stream);
+      if(items.length === 0){ col.innerHTML += `<p class='note'>No classes yet.</p>`; }
       items.forEach(it=>{
-        const card=document.createElement("div"); card.className="class-card";
+        const card = document.createElement("div"); card.className="class-card";
         let html="";
         if(it.class_name) html+=`<h4>${escapeHtml(it.class_name)}</h4>`;
         if(it.youtube_link) html+=`<p><a href="${escapeAttr(it.youtube_link)}" target="_blank">▶ YouTube</a></p>`;
@@ -129,8 +136,12 @@ function renderAll(){
 }
 
 // ---------- Semester selection ----------
-function showSemester(n){document.querySelectorAll(".semester").forEach(s=>s.style.display="none");document.getElementById("sem"+n).style.display="block";}
-showSemester(1); renderAll();
+function showSemester(n){
+  document.querySelectorAll(".semester").forEach(s=>s.style.display="none");
+  document.getElementById("sem"+n).style.display="block";
+}
+showSemester(1);
+renderAll();
 
 // ---------- Admin via triple-click logo ----------
 let clickCount=0;
@@ -151,12 +162,14 @@ document.addEventListener('keydown', e=>{if(e.key==='Escape') closeModal();});
 
 // ---------- Admin Panel ----------
 function openAdminPanel(){
-  const classes=loadClasses(); let listHtml="";
+  const classes = loadClasses(); let listHtml="";
   if(classes.length===0){ listHtml="<p class='note'>No classes yet.</p>"; }
-  else{ listHtml='<div style="max-height:220px;overflow:auto;margin-top:8px">';
+  else{
+    listHtml='<div style="max-height:220px;overflow:auto;margin-top:8px">';
     classes.slice().reverse().forEach(c=>{
       listHtml+=`<div style="padding:8px;border-bottom:1px solid #eef2f7"><strong>Sem ${c.semester}</strong> ${c.stream?`(${c.stream})`:''} — ${c.class_name||'<em>Unnamed</em>'}<br><small>${c.youtube_link?`<a href="${escapeAttr(c.youtube_link)}" target="_blank">YouTube</a>`:''} ${c.pdf_url?`<a href="${escapeAttr(c.pdf_url)}" target="_blank">PDF</a>`:''}</small><div style="margin-top:6px"><button class="small" onclick="editClass('${c.id}')">Edit</button><button class="small danger" onclick="deleteClass('${c.id}')">Delete</button></div></div>`;
-    }); listHtml+="</div>"; 
+    });
+    listHtml+="</div>";
   }
 
   showModal(`
@@ -184,11 +197,88 @@ function openAdminPanel(){
 }
 
 // Admin actions
-function saveNewClass(){const sem=parseInt(document.getElementById("admSemester").value);const stream=document.getElementById("admStream").value||null;const name=document.getElementById("admClassName").value.trim()||null;const yt=document.getElementById("admYouTube").value.trim()||null;const pdf=document.getElementById("admPdfUrl").value.trim()||null;const list=loadClasses();list.push({id:crypto.randomUUID?crypto.randomUUID():'id_'+Date.now(),semester:sem,stream:stream,class_name:name,youtube_link:yt,pdf_url:pdf,created_at:new Date().toISOString()});saveClasses(list);renderAll();alert("Saved");openAdminPanel();}
-function editClass(id){const c=loadClasses().find(x=>x.id===id);if(!c)return alert("Not found");showModal(`<h3>Edit Class</h3><form id="adminForm" onsubmit="return false;"><label>Semester<select id="admSemester"><option ${c.semester===1?'selected':''} value="1">Semester 1</option><option ${c.semester===2?'selected':''} value="2">Semester 2</option><option ${c.semester===3?'selected':''} value="3">Semester 3</option><option ${c.semester===4?'selected':''} value="4">Semester 4</option><option ${c.semester===5?'selected':''} value="5">Semester 5</option><option ${c.semester===6?'selected':''} value="6">Semester 6</option></select></label><label>Stream<select id="admStream"><option ${!c.stream?'selected':''} value="">None</option><option ${c.stream==='BA'?'selected':''} value="BA">BA</option><option ${c.stream==='BSc'?'selected':''} value="BSc">BSc</option><option ${c.stream==='B.Com'?'selected':''} value="B.Com">B.Com</option></select></label><label>Class Name<input id="admClassName" type="text" value="${escapeAttr(c.class_name)}"></label><label>YouTube Link<input id="admYouTube" type="url" value="${escapeAttr(c.youtube_link)}"></label><label>PDF URL<input id="admPdfUrl" type="url" value="${escapeAttr(c.pdf_url)}"></label><div class="admin-controls"><button class="btn" onclick="saveEditedClass('${c.id}')">Save</button><button class="small" onclick="openAdminPanel()">Cancel</button></div></form>`);}
-function saveEditedClass(id){const sem=parseInt(document.getElementById("admSemester").value);const stream=document.getElementById("admStream").value||null;const name=document.getElementById("admClassName").value.trim()||null;const yt=document.getElementById("admYouTube").value.trim()||null;const pdf=document.getElementById("admPdfUrl").value.trim()||null;const list=loadClasses();const idx=list.findIndex(x=>x.id===id);if(idx>=0){list[idx]={...list[idx],semester:sem,stream:stream,class_name:name,youtube_link:yt,pdf_url:pdf,created_at:new Date().toISOString()}}saveClasses(list);renderAll();openAdminPanel();alert("Updated");}
-function deleteClass(id){if(!confirm("Delete this class?"))return;let list=loadClasses();list=list.filter(x=>x.id!==id);saveClasses(list);renderAll();openAdminPanel();}
-function wipeData(){if(confirm("Remove ALL local classes? This cannot be undone.")){localStorage.removeItem(STORAGE_KEY);renderAll();openAdminPanel();}}
+function saveNewClass(){
+  const sem = parseInt(document.getElementById("admSemester").value);
+  const stream = document.getElementById("admStream").value || null;
+  const name = document.getElementById("admClassName").value.trim() || null;
+  const yt = document.getElementById("admYouTube").value.trim() || null;
+  const pdf = document.getElementById("admPdfUrl").value.trim() || null;
+  const list = loadClasses();
+  list.push({id:crypto.randomUUID?crypto.randomUUID():'id_'+Date.now(),semester:sem,stream:stream,class_name:name,youtube_link:yt,pdf_url:pdf,created_at:new Date().toISOString()});
+  saveClasses(list);
+  renderAll(); // refresh view immediately
+  alert("Saved");
+  openAdminPanel();
+}
+
+function editClass(id){
+  const c = loadClasses().find(x=>x.id===id);
+  if(!c) return alert("Not found");
+  showModal(`
+    <h3>Edit Class</h3>
+    <form id="adminForm" onsubmit="return false;">
+      <label>Semester
+        <select id="admSemester">
+          <option ${c.semester===1?'selected':''} value="1">Semester 1</option>
+          <option ${c.semester===2?'selected':''} value="2">Semester 2</option>
+          <option ${c.semester===3?'selected':''} value="3">Semester 3</option>
+          <option ${c.semester===4?'selected':''} value="4">Semester 4</option>
+          <option ${c.semester===5?'selected':''} value="5">Semester 5</option>
+          <option ${c.semester===6?'selected':''} value="6">Semester 6</option>
+        </select>
+      </label>
+      <label>Stream
+        <select id="admStream">
+          <option ${!c.stream?'selected':''} value="">None</option>
+          <option ${c.stream==='BA'?'selected':''} value="BA">BA</option>
+          <option ${c.stream==='BSc'?'selected':''} value="BSc">BSc</option>
+          <option ${c.stream==='B.Com'?'selected':''} value="B.Com">B.Com</option>
+        </select>
+      </label>
+      <label>Class Name<input id="admClassName" type="text" value="${escapeAttr(c.class_name)}"></label>
+      <label>YouTube Link<input id="admYouTube" type="url" value="${escapeAttr(c.youtube_link)}"></label>
+      <label>PDF URL<input id="admPdfUrl" type="url" value="${escapeAttr(c.pdf_url)}"></label>
+      <div class="admin-controls">
+        <button class="btn" onclick="saveEditedClass('${c.id}')">Save</button>
+        <button class="small" onclick="openAdminPanel()">Cancel</button>
+      </div>
+    </form>
+  `);
+}
+
+function saveEditedClass(id){
+  const sem = parseInt(document.getElementById("admSemester").value);
+  const stream = document.getElementById("admStream").value || null;
+  const name = document.getElementById("admClassName").value.trim() || null;
+  const yt = document.getElementById("admYouTube").value.trim() || null;
+  const pdf = document.getElementById("admPdfUrl").value.trim() || null;
+  const list = loadClasses();
+  const idx = list.findIndex(x=>x.id===id);
+  if(idx>=0){
+    list[idx] = {...list[idx], semester:sem, stream:stream, class_name:name, youtube_link:yt, pdf_url:pdf, created_at:new Date().toISOString()};
+  }
+  saveClasses(list);
+  renderAll(); // refresh view immediately
+  openAdminPanel();
+  alert("Updated");
+}
+
+function deleteClass(id){
+  if(!confirm("Delete this class?")) return;
+  let list = loadClasses();
+  list = list.filter(x=>x.id!==id);
+  saveClasses(list);
+  renderAll(); // refresh view immediately
+  openAdminPanel();
+}
+
+function wipeData(){
+  if(confirm("Remove ALL local classes? This cannot be undone.")){
+    localStorage.removeItem(STORAGE_KEY);
+    renderAll();
+    openAdminPanel();
+  }
+}
 </script>
 </body>
 </html>
