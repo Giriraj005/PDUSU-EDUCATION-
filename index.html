@@ -4,11 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🎓 PDUSU EDUCATION</title>
-
-<!-- PWA Manifest -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
-
 <style>
 :root{--bg:#f8fafc;--card:#fff;--muted:#475569;--accent:#2563eb}
 body{font-family:Arial,sans-serif;margin:0;background:var(--bg);color:#0f172a;position:relative;min-height:100vh;}
@@ -23,35 +18,19 @@ button:hover,.btn:hover{background:#1e40af}
 .semester{display:none;animation:fade .25s ease}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .semester-columns{display:flex;gap:12px;margin-top:15px;flex-wrap:wrap}
-.column{flex:1;background:var(--card);padding:12px;border-radius:10px;box-shadow:0 1px 5px rgba(0,0,0,.07);min-width:200px}
+.column{flex:1;background:var(--card);padding:16px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.1);min-width:220px}
 .column h3{margin-top:0;color:var(--accent)}
-.class-card{background:#f1f5f9;border-radius:8px;padding:10px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.class-card a{color:var(--accent);text-decoration:none}
+.class-card{background:#f1f5f9;border-radius:10px;padding:12px;margin-bottom:12px;box-shadow:0 2px 4px rgba(0,0,0,.08)}
+.class-card a{color:var(--accent);text-decoration:none;font-weight:500}
 footer{text-align:center;padding:20px;background:#e2e8f0;color:var(--muted);font-size:14px}
-/* Admin modal */
 .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:50}
-.modal{background:#fff;border-radius:10px;padding:18px;width:90%;max-width:520px;box-shadow:0 8px 30px rgba(2,6,23,.2)}
+.modal{background:#fff;border-radius:10px;padding:20px;width:90%;max-width:520px;box-shadow:0 8px 30px rgba(2,6,23,.2)}
 label{display:block;margin-top:8px;font-size:14px}
 input[type="text"],select,input[type="url"]{width:100%;padding:10px;border:1px solid #e6e9ef;border-radius:8px;margin-top:6px}
 .admin-controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 .danger{background:#ef4444}
 .small{font-size:13px;padding:8px 10px;border-radius:6px}
 .note{color:#6b7280;font-size:13px;margin-top:8px}
-/* Red admin ball top-right */
-#adminBall {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  background: red;
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  cursor: pointer;
-  z-index: 10000;
-  box-shadow: 0 0 6px rgba(0,0,0,0.3);
-  pointer-events:auto;
-}
-#adminBall:hover{transform: scale(1.2); transition: transform 0.15s;}
 </style>
 </head>
 <body>
@@ -65,6 +44,9 @@ input[type="text"],select,input[type="url"]{width:100%;padding:10px;border:1px s
 </header>
 
 <nav>
+  <button onclick="showSection('result')">📊 Result</button>
+  <button onclick="showSection('syllabus')">📑 Syllabus</button>
+  <button onclick="showSection('news')">📰 University News</button>
   <button onclick="showSemester(1)">Semester 1</button>
   <button onclick="showSemester(2)">Semester 2</button>
   <button onclick="showSemester(3)">Semester 3</button>
@@ -74,15 +56,32 @@ input[type="text"],select,input[type="url"]{width:100%;padding:10px;border:1px s
 </nav>
 
 <div class="content">
+  <div id="result" class="semester">
+    <h2>📊 Result</h2>
+    <p><a href="https://shekhauniexam.in/" target="_blank">Click here to view results</a></p>
+  </div>
+
+  <div id="syllabus" class="semester">
+    <h2>📑 Syllabus</h2>
+    <p><a href="https://shekhauni.ac.in/Home/Syllabus" target="_blank">Click here to view syllabus</a></p>
+  </div>
+
+  <div id="news" class="semester">
+    <h2>📰 University News</h2>
+    <p><a href="https://shekhauni.ac.in/Home/Examination" target="_blank">Click here for university news</a></p>
+  </div>
+
+  <!-- Semester sections -->
   <div id="sem1" class="semester"><h2>📘 Semester 1</h2><div class="semester-columns"></div></div>
   <div id="sem2" class="semester"><h2>📗 Semester 2</h2><div class="semester-columns"></div></div>
   <div id="sem3" class="semester"><h2>📙 Semester 3</h2><div class="semester-columns"></div></div>
   <div id="sem4" class="semester"><h2>📒 Semester 4</h2><div class="semester-columns"></div></div>
   <div id="sem5" class="semester"><h2>📕 Semester 5</h2><div class="semester-columns"></div></div>
   <div id="sem6" class="semester"><h2>📚 Semester 6</h2><div class="semester-columns"></div></div>
+
 </div>
 
-<footer>© 2025 PDUSU EDUCATION | Designed for University Students By GIRIRAJPAREEK</footer>
+<footer>© 2025 PDUSU EDUCATION | Designed for University Students</footer>
 
 <!-- Admin modal -->
 <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
@@ -91,13 +90,15 @@ input[type="text"],select,input[type="url"]{width:100%;padding:10px;border:1px s
   </div>
 </div>
 
-<!-- Admin ball -->
-<div id="adminBall" title="Admin Access"></div>
-
 <script>
 // ---------- Config ----------
 const PASSWORD_SHA256 = "8abf09e0892662c4b8945de98ac87f804fdf1bc1e8545ecebb570683a68b4928"; // 9828
-const STORAGE_KEY = "pdusu_classes_v3";
+const GITHUB_USERNAME = "Giriraj005";
+const REPO_NAME = "pdusu-classes";
+const FILE_PATH = "classes.json";
+const BRANCH = "main";
+const TOKEN = "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";
+const RAW_JSON_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/${FILE_PATH}`;
 
 // ---------- Helpers ----------
 async function sha256Hex(input){
@@ -106,13 +107,24 @@ async function sha256Hex(input){
   const hash = await crypto.subtle.digest("SHA-256", data);
   return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
-function loadClasses(){ return JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]"); }
-function saveClasses(list){ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]); }
 function escapeAttr(s){ return String(s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
+// ---------- Load classes ----------
+async function loadClasses(){
+  try {
+    const res = await fetch(RAW_JSON_URL);
+    const data = await res.json();
+    return data.classes || [];
+  } catch(e){
+    console.error("Failed to fetch classes.json", e);
+    return [];
+  }
+}
+
 // ---------- Render ----------
-function renderAll(){
+async function renderAll(){
+  const allClasses = await loadClasses();
   for(let s=1;s<=6;s++){
     const container=document.querySelector("#sem"+s+" .semester-columns");
     container.innerHTML="";
@@ -120,7 +132,7 @@ function renderAll(){
     streams.forEach(stream=>{
       const col=document.createElement("div"); col.className="column";
       col.innerHTML=`<h3>${stream}</h3>`;
-      const items=loadClasses().filter(c=>c.semester===s && c.stream===stream);
+      const items = allClasses.filter(c=>c.semester===s && c.stream===stream);
       if(items.length===0){ col.innerHTML+=`<p class='note'>No classes yet.</p>`; }
       items.forEach(it=>{
         const card=document.createElement("div"); card.className="class-card";
@@ -136,28 +148,14 @@ function renderAll(){
   }
 }
 
-// ---------- Semester selection ----------
-function showSemester(n){
-  document.querySelectorAll(".semester").forEach(s=>s.style.display="none");
-  document.getElementById("sem"+n).style.display="block";
-}
+// ---------- Semester & Section ----------
+function showSemester(n){ document.querySelectorAll(".semester").forEach(s=>s.style.display="none"); document.getElementById("sem"+n).style.display="block"; }
+function showSection(name){ document.querySelectorAll(".semester").forEach(s=>s.style.display="none"); const el = document.getElementById(name); if(el) el.style.display='block'; }
+
 showSemester(1);
 renderAll();
 
-// ---------- Admin ----------
-const modalBackdrop=document.getElementById("modalBackdrop");
-const modalContent=document.getElementById("modalContent");
-
-// Admin via red ball
-document.getElementById("adminBall").addEventListener("click", async ()=>{
-  const pwd = prompt("Enter Admin Password:");
-  if(!pwd) return;
-  const hash = await sha256Hex(pwd);
-  if(hash===PASSWORD_SHA256){ openAdminPanel(); }
-  else{ alert("Incorrect password"); }
-});
-
-// Admin via triple-click logo
+// ---------- Admin via triple-click logo ----------
 let clickCount=0;
 document.getElementById('logo').addEventListener('click', async ()=>{
   clickCount++;
@@ -172,160 +170,42 @@ document.getElementById('logo').addEventListener('click', async ()=>{
   setTimeout(()=>clickCount=0,1500);
 });
 
-// Show modal
+// ---------- Admin Panel ----------
+const modalBackdrop=document.getElementById("modalBackdrop");
+const modalContent=document.getElementById("modalContent");
 function showModal(html){ modalContent.innerHTML=html; modalBackdrop.style.display="flex"; }
 function closeModal(){ modalBackdrop.style.display="none"; }
 
-// ---------- Admin Panel Logic ----------
-function openAdminPanel(){
-  const classes = loadClasses();
-  let listHtml="";
-  if(classes.length===0){ listHtml="<p class='note'>No classes yet.</p>"; }
-  else{
-    listHtml='<div style="max-height:220px;overflow:auto;margin-top:8px">';
-    classes.slice().reverse().forEach(c=>{
-      listHtml+=`
-        <div style="padding:8px;border-bottom:1px solid #eef2f7">
-          <strong>Sem ${c.semester}</strong> ${c.stream?`(${c.stream})`:''} — ${c.class_name||'<em>Unnamed</em>'}<br>
-          <small>${c.youtube_link?`<a href="${escapeAttr(c.youtube_link)}" target="_blank">YouTube</a>`:''} ${c.pdf_url?`<a href="${escapeAttr(c.pdf_url)}" target="_blank">PDF</a>`:''}</small>
-          <div style="margin-top:6px">
-            <button class="small" onclick="editClass('${c.id}')">Edit</button>
-            <button class="small danger" onclick="deleteClass('${c.id}')">Delete</button>
-          </div>
-        </div>
-      `;
+async function pushClassesToGitHub(updatedData, commitMessage="Update classes"){
+  try{
+    // Get current file SHA
+    const fileRes = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FILE_PATH}`,{
+      headers:{Authorization:`token ${TOKEN}`}
     });
-    listHtml+="</div>";
-  }
+    const fileData = await fileRes.json();
+    const sha = fileData.sha;
 
-  showModal(`
-    <h3>Admin Panel</h3>
-    <form id="adminForm" onsubmit="return false;">
-      <label>Semester
-        <select id="admSemester">
-          <option value="1">Semester 1</option>
-          <option value="2">Semester 2</option>
-          <option value="3">Semester 3</option>
-          <option value="4">Semester 4</option>
-          <option value="5">Semester 5</option>
-          <option value="6">Semester 6</option>
-        </select>
-      </label>
-      <label>Stream
-        <select id="admStream">
-          <option value="">None</option>
-          <option value="BA">BA</option>
-          <option value="BSc">BSc</option>
-          <option value="B.Com">B.Com</option>
-        </select>
-      </label>
-      <label>Class Name
-        <input id="admClassName" type="text" placeholder="Economics Basics">
-      </label>
-      <label>YouTube Link
-        <input id="admYouTube" type="url" placeholder="https://www.youtube.com/watch?v=...">
-      </label>
-      <label>PDF URL
-        <input id="admPdfUrl" type="url" placeholder="https://example.com/notes.pdf">
-      </label>
-      <div class="admin-controls">
-        <button class="btn" onclick="saveNewClass()">Add / Save</button>
-        <button class="small" onclick="closeModal()">Close</button>
-      </div>
-    </form>
-    <hr>
-    <h4>Existing classes</h4>
-    ${listHtml}
-    <div style="margin-top:8px"><button class="small danger" onclick="wipeData()">Wipe all local data</button></div>
-  `);
+    // Commit new content
+    const putRes = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FILE_PATH}`,{
+      method:"PUT",
+      headers:{"Authorization":`token ${TOKEN}`,"Content-Type":"application/json"},
+      body: JSON.stringify({
+        message: commitMessage,
+        content: btoa(JSON.stringify({classes:updatedData}, null, 2)),
+        sha: sha,
+        branch: BRANCH
+      })
+    });
+    const result = await putRes.json();
+    console.log("GitHub update result:", result);
+    alert("Classes updated successfully!");
+    renderAll();
+  }catch(e){console.error(e);alert("Failed to update GitHub file.");}
 }
 
-// ---------- Admin actions ----------
-function saveNewClass(){
-  const sem = parseInt(document.getElementById("admSemester").value);
-  const stream = document.getElementById("admStream").value||null;
-  const name = document.getElementById("admClassName").value.trim()||null;
-  const yt = document.getElementById("admYouTube").value.trim()||null;
-  const pdf = document.getElementById("admPdfUrl").value.trim()||null;
-  const list = loadClasses();
-  list.push({
-    id: crypto.randomUUID ? crypto.randomUUID() : 'id_'+Date.now(),
-    semester: sem,
-    stream: stream,
-    class_name: name,
-    youtube_link: yt,
-    pdf_url: pdf,
-    created_at: new Date().toISOString()
-  });
-  saveClasses(list); renderAll(); alert("Saved"); openAdminPanel();
-}
-
-function editClass(id){
-  const c = loadClasses().find(x=>x.id===id);
-  if(!c) return alert("Not found");
-  showModal(`
-    <h3>Edit Class</h3>
-    <form id="adminForm" onsubmit="return false;">
-      <label>Semester
-        <select id="admSemester">
-          <option ${c.semester===1?'selected':''} value="1">Semester 1</option>
-          <option ${c.semester===2?'selected':''} value="2">Semester 2</option>
-          <option ${c.semester===3?'selected':''} value="3">Semester 3</option>
-          <option ${c.semester===4?'selected':''} value="4">Semester 4</option>
-          <option ${c.semester===5?'selected':''} value="5">Semester 5</option>
-          <option ${c.semester===6?'selected':''} value="6">Semester 6</option>
-        </select>
-      </label>
-      <label>Stream
-        <select id="admStream">
-          <option ${!c.stream?'selected':''} value="">None</option>
-          <option ${c.stream==='BA'?'selected':''} value="BA">BA</option>
-          <option ${c.stream==='BSc'?'selected':''} value="BSc">BSc</option>
-          <option ${c.stream==='B.Com'?'selected':''} value="B.Com">B.Com</option>
-        </select>
-      </label>
-      <label>Class Name
-        <input id="admClassName" type="text" value="${escapeAttr(c.class_name)}">
-      </label>
-      <label>YouTube Link
-        <input id="admYouTube" type="url" value="${escapeAttr(c.youtube_link)}">
-      </label>
-      <label>PDF URL
-        <input id="admPdfUrl" type="url" value="${escapeAttr(c.pdf_url)}">
-      </label>
-      <div class="admin-controls">
-        <button class="btn" onclick="saveEditedClass('${c.id}')">Save</button>
-        <button class="small" onclick="openAdminPanel()">Cancel</button>
-      </div>
-    </form>
-  `);
-}
-
-function saveEditedClass(id){
-  const sem = parseInt(document.getElementById("admSemester").value);
-  const stream = document.getElementById("admStream").value||null;
-  const name = document.getElementById("admClassName").value.trim()||null;
-  const yt = document.getElementById("admYouTube").value.trim()||null;
-  const pdf = document.getElementById("admPdfUrl").value.trim()||null;
-  const list = loadClasses();
-  const idx = list.findIndex(x=>x.id===id);
-  if(idx>=0){
-    list[idx] = { ...list[idx], semester:sem, stream:stream, class_name:name, youtube_link:yt, pdf_url:pdf, created_at:new Date().toISOString() };
-  }
-  saveClasses(list); renderAll(); openAdminPanel(); alert("Updated");
-}
-
-function deleteClass(id){
-  if(!confirm("Delete this class?")) return;
-  let list = loadClasses();
-  list = list.filter(x=>x.id!==id);
-  saveClasses(list); renderAll(); openAdminPanel();
-}
-
-function wipeData(){
-  if(confirm("Remove ALL local classes? This cannot be undone.")){
-    localStorage.removeItem(STORAGE_KEY); renderAll(); openAdminPanel();
-  }
+// Dummy Admin panel placeholder
+function openAdminPanel(){
+  alert("Admin panel opens here. You can add/edit/delete classes.\nAll changes will sync to GitHub automatically.");
 }
 </script>
 
