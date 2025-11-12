@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>PDUSU EDUCATION — Admin</title>
+<meta name="theme-color" content="#2563eb" />
+<style>
+:root{--bg:#f8fafc;--text:#0f172a;--card:#fff;--muted:#475569;--accent:#2563eb}
+[data-theme="dark"]{--bg:#071022;--text:#eef6ff;--card:#0b1220;--muted:#9fb0c8;--accent:#3b82f6}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:linear-gradient(90deg,#6366f1,#ec4899,#f59e0b);color:#fff}
+.header-left{display:flex;gap:12px;align-items:center}
+#logo{width:68px;height:68px;border-radius:10px;background:#fff;padding:6px;cursor:pointer;object-fit:cover}
+.theme-toggle{background:rgba(255,255,255,0.95);color:var(--accent);border:none;padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:700}
+.container{width:95%;max-width:980px;margin:18px auto;background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 24px rgba(2,6,23,0.08)}
+h2{margin:0 0 12px 0;color:var(--accent)}
+.form-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+label{display:block;font-size:14px}
+input[type="text"],input[type="url"],select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:var(--bg);color:var(--text)}
+input[type="file"]{padding:6px}
+.btn{padding:10px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+.btn-primary{background:var(--accent);color:#fff}
+.progress{height:12px;background:#f1f5f9;border-radius:8px;overflow:hidden;margin-top:8px}
+.progress > i{display:block;height:100%;background:var(--accent);width:0%}
+.note{font-size:13px;color:var(--muted)}
+.table-wrap{margin-top:16px;overflow:auto}
+table{width:100%;border-collapse:collapse}
+thead th{padding:8px;text-align:left;border-bottom:1px solid rgba(0,0,0,0.06)}
+tbody td{padding:8px;border-bottom:1px solid rgba(0,0,0,0.04)}
+@media(max-width:700px){.container{padding:12px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <img id="logo" src="PDUSU-logo.png" alt="PDUSU Logo">
+    <div>
+      <h2>Admin Panel — PDUSU EDUCATION</h2>
+    </div>
+  </div>
+  <div>
+    <button id="themeToggle" class="theme-toggle">🌞 Light</button>
+  </div>
+</header>
+
+<div class="container" id="mainBox">
+  <div id="authNotice" class="note">Admin login required — logo पर तीन बार क्लिक करें या नीचे "Login" बटन दबाएँ।</div>
+
+  <div id="adminArea" style="display:none">
+    <h3>Upload PDF (Storage → Firestore)</h3>
+
+    <div class="form-row">
+      <label style="flex:1">
+        Course<br>
+        <select id="admCourse"><option value="BSC">BSC</option><option value="BA">BA</option><option value="BCOM">BCOM</option></select>
+      </label>
+      <label style="flex:1">
+        Semester<br>
+        <select id="admSem"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
+      </label>
+    </div>
+
+    <label>Subject name<br><input id="admSubject" type="text" placeholder="Subject name"></label>
+    <label style="margin-top:8px">YouTube Link (optional)<br><input id="admYoutube" type="url" placeholder="https://www.youtube.com/..."></label>
+    <label style="margin-top:8px">Choose PDF (required)<br><input id="admPdfFile" type="file" accept="application/pdf"></label>
+
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+      <button id="uploadBtn" class="btn btn-primary">Upload & Save</button>
+      <button id="logoutBtn" class="btn">Logout</button>
+    </div>
+
+    <div class="progress" style="display:none;margin-top:10px"><i style="width:0%"></i></div>
+    <div id="adminMsg" class="note" style="margin-top:10px"></div>
+
+    <div class="table-wrap" id="entriesArea">
+      <h3 style="margin-top:16px">Existing entries</h3>
+      <table id="entriesTable">
+        <thead><tr><th>Course</th><th>Sem</th><th>Subject</th><th>PDF</th><th>Uploaded At</th></tr></thead>
+        <tbody id="entriesBody"><tr><td colspan="5" class="note">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="margin-top:12px">
+    <button id="loginBtn" class="btn btn-primary">Login (Admin)</button>
+    <button id="openSiteBtn" class="btn">Open Students Page</button>
+  </div>
+</div>
+
+<!-- Firebase + JS -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
+
+/* ========== Firebase config (same as yours) ========== */
+const firebaseConfig = {
+  apiKey: "AIzaSyADiTKwpQ2uW5DTo8lUp44TDAbSPQ3ntMQ",
+  authDomain: "pdusu-education-4503b.firebaseapp.com",
+  projectId: "pdusu-education-4503b",
+  storageBucket: "pdusu-education-4503b.firebasestorage.app",
+  messagingSenderId: "186812462719",
+  appId: "1:186812462719:web:2108c8d68c12ff2b9f314a",
+  measurementId: "G-4YT9MXGYWS"
+};
+const app = initializeApp(firebaseConfig);
+try{ getAnalytics(app);}catch(e){}
+const db = getFirestore(app);
+const storage = getStorage(app);
+const COLLECTION = 'courses';
+
+/* Admin password hash for Pdusu123 */
+const PASSWORD_SHA256 = "77cce9ae9209d01fb54c53a30b682af6815ffafb70174876013cb24436df2ca2";
+
+/* helpers */
+function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+async function sha256Hex(input){ const enc=new TextEncoder(); const h=await crypto.subtle.digest('SHA-256', enc.encode(input)); return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+
+/* theme */
+const themeToggle = document.getElementById('themeToggle');
+function applyTheme(t){ if(t==='dark') document.documentElement.setAttribute('data-theme','dark'); else document.documentElement.removeAttribute('data-theme'); themeToggle.textContent = t==='dark'?'🌙 Dark':'🌞 Light'; localStorage.setItem('pdusu_theme', t); }
+(function(){ const saved = localStorage.getItem('pdusu_theme')||'light'; applyTheme(saved); })();
+themeToggle.addEventListener('click', ()=>{ const cur = document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light'; applyTheme(cur==='dark'?'light':'dark'); });
+
+/* UI elements */
+const loginBtn = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const adminArea = document.getElementById('adminArea');
+const authNotice = document.getElementById('authNotice');
+const uploadBtn = document.getElementById('uploadBtn');
+const adminMsg = document.getElementById('adminMsg');
+const progressBar = document.querySelector('.progress');
+const progressInner = progressBar.querySelector('i');
+const entriesBody = document.getElementById('entriesBody');
+const openSiteBtn = document.getElementById('openSiteBtn');
+
+/* login flow */
+async function doLogin(){
+  const pwd = prompt('Admin Password डालें:');
+  if(!pwd) return;
+  const h = await sha256Hex(pwd);
+  if(h === PASSWORD_SHA256){
+    authNotice.style.display = 'none';
+    adminArea.style.display = 'block';
+    loginBtn.style.display = 'none';
+    loadEntries();
+    alert('Welcome Admin');
+  } else {
+    alert('Password गलत');
+  }
+}
+
+loginBtn.addEventListener('click', doLogin);
+document.getElementById('logo').addEventListener('click', ()=>{ /* triple click to open prompt */ let c=(document.logoClickCount||0)+1; document.logoClickCount=c; if(c===3){ document.logoClickCount=0; doLogin(); } setTimeout(()=>document.logoClickCount=0,1400); });
+
+logoutBtn.addEventListener('click', ()=>{
+  adminArea.style.display='none'; loginBtn.style.display='inline-block'; authNotice.style.display='block';
+});
+
+/* upload handler */
+uploadBtn.addEventListener('click', async ()=>{
+  adminMsg.textContent=''; progressBar.style.display='none'; progressInner.style.width='0%';
+  const course = document.getElementById('admCourse').value;
+  const sem = Number(document.getElementById('admSem').value);
+  const subject = document.getElementById('admSubject').value.trim();
+  const youtube = document.getElementById('admYoutube').value.trim();
+  const fileInput = document.getElementById('admPdfFile');
+  const file = fileInput.files && fileInput.files[0];
+  if(!subject){ adminMsg.textContent='कृपया Subject name भरें'; return; }
+  if(!file){ adminMsg.textContent='कृपया PDF file चुनें'; return; }
+  if(file.type !== 'application/pdf'){ adminMsg.textContent='कृपया PDF ही चुनें'; return; }
+
+  uploadBtn.disabled = true;
+  uploadBtn.textContent = 'Uploading...';
+  progressBar.style.display = 'block';
+  try{
+    const path = `courses/${course.toLowerCase()}/sem${sem}/${Date.now()}_${file.name}`;
+    const stRef = sRef(storage, path);
+    const task = uploadBytesResumable(stRef, file);
+    task.on('state_changed', snapshot=>{
+      const pct = Math.round((snapshot.bytesTransferred/snapshot.totalBytes)*100);
+      progressInner.style.width = pct + '%';
+    }, err=>{
+      adminMsg.textContent = 'Upload failed: ' + err.message;
+      uploadBtn.disabled = false; uploadBtn.textContent='Upload & Save';
+    }, async ()=>{
+      const url = await getDownloadURL(task.snapshot.ref);
+      // save metadata
+      await addDoc(collection(db, COLLECTION), {
+        course: course,
+        semester: sem,
+        subject: subject,
+        youtube: youtube || '',
+        pdfUrl: url,
+        uploadedAt: serverTimestamp()
+      });
+      adminMsg.textContent = 'Uploaded and saved successfully!';
+      document.getElementById('admSubject').value=''; document.getElementById('admYoutube').value=''; document.getElementById('admPdfFile').value='';
+      uploadBtn.disabled = false; uploadBtn.textContent='Upload & Save';
+      progressBar.style.display='none';
+      loadEntries();
+    });
+  }catch(err){
+    adminMsg.textContent = 'Error: '+ err.message;
+    uploadBtn.disabled = false; uploadBtn.textContent='Upload & Save';
+  }
+});
+
+/* load existing entries */
+async function loadEntries(){
+  entriesBody.innerHTML = '<tr><td colspan="5" class="note">Loading...</td></tr>';
+  try{
+    const colRef = collection(db, COLLECTION);
+    const q = query(colRef, orderBy('course'), orderBy('semester'));
+    const snap = await getDocs(q);
+    const rows = [];
+    snap.forEach(doc=>{
+      const d = doc.data();
+      rows.push({
+        id: doc.id,
+        course: d.course || d.stream || '',
+        semester: d.semester || d.sem || d.semester || '',
+        subject: d.subject || d.subject_name || d.class_name || '',
+        pdf: d.pdfUrl || d.pdf_url || d.pdf || '',
+        uploadedAt: d.uploadedAt ? (d.uploadedAt.toDate ? d.uploadedAt.toDate() : new Date(d.uploadedAt)) : null
+      });
+    });
+    if(rows.length===0){
+      entriesBody.innerHTML = '<tr><td colspan="5" class="note">No entries yet.</td></tr>';
+      return;
+    }
+    let html = '';
+    rows.forEach(r=>{
+      html += `<tr>
+        <td>${esc(r.course)}</td>
+        <td>${esc(r.semester)}</td>
+        <td>${esc(r.subject)}</td>
+        <td>${r.pdf? `<a href="${esc(r.pdf)}" target="_blank">PDF</a>` : '-'}</td>
+        <td>${r.uploadedAt? esc(r.uploadedAt.toLocaleString()): '-'}</td>
+      </tr>`;
+    });
+    entriesBody.innerHTML = html;
+  }catch(e){
+    entriesBody.innerHTML = '<tr><td colspan="5" class="note">Error loading entries</td></tr>';
+  }
+}
+
+/* open students site */
+openSiteBtn.addEventListener('click', ()=>{ window.location.href = 'index.html'; });
+
+/* initial theme */
+(function(){ const saved = localStorage.getItem('pdusu_theme') || 'light'; applyTheme(saved); })();
+function applyTheme(t){ if(t==='dark') document.documentElement.setAttribute('data-theme','dark'); else document.documentElement.removeAttribute('data-theme'); document.getElementById('themeToggle').textContent = t==='dark'?'🌙 Dark':'🌞 Light'; localStorage.setItem('pdusu_theme', t); }
+document.getElementById('themeToggle').addEventListener('click', ()=>{ const cur=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light'; applyTheme(cur==='dark'?'light':'dark'); });
+
+</script>
+</body>
+</html>
