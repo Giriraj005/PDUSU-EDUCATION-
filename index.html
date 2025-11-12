@@ -7,9 +7,9 @@
 <meta name="theme-color" content="#2563eb" />
 <style>
 :root{
-  --bg:#f8fafc;--text:#0f172a;--card:#fff;--muted:#475569;--accent:#2563eb;--glass:rgba(255,255,255,0.6);
+  --bg:#f8fafc;--text:#0f172a;--card:#fff;--muted:#475569;--accent:#2563eb;
 }
-[data-theme="dark"]{--bg:#0b1220;--text:#e6eef8;--card:#0f1724;--muted:#94a3b8;--accent:#3b82f6;--glass:rgba(255,255,255,0.03)}
+[data-theme="dark"]{--bg:#0b1220;--text:#e6eef8;--card:#0f1724;--muted:#94a3b8;--accent:#3b82f6}
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
 header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;background:linear-gradient(90deg,#6366f1,#ec4899,#f59e0b);color:#fff}
@@ -43,7 +43,6 @@ tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
 </style>
 </head>
 <body>
-
 <header>
   <div class="header-left">
     <img id="logo" src="PDUSU-logo.png" alt="PDUSU Logo">
@@ -58,15 +57,15 @@ tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
 </header>
 
 <main class="main-wrap">
-  <aside class="sidebar" aria-label="Useful links">
+  <aside class="sidebar">
     <h3>महत्वपूर्ण लिंक्स</h3>
-    <a class="link" href="https://shekhauniexam.in/" target="_blank" rel="noopener">📄 Result</a>
-    <a class="link" href="https://shekhauni.ac.in/Home/Syllabus" target="_blank" rel="noopener">📘 Syllabus</a>
-    <a class="link" href="https://shekhauni.ac.in/Home/Examination" target="_blank" rel="noopener">📰 University News</a>
-    <a class="link" href="https://www.youtube.com/" target="_blank" rel="noopener">▶️ YouTube</a>
+    <a class="link" href="https://shekhauniexam.in/" target="_blank">📄 Result</a>
+    <a class="link" href="https://shekhauni.ac.in/Home/Syllabus" target="_blank">📘 Syllabus</a>
+    <a class="link" href="https://shekhauni.ac.in/Home/Examination" target="_blank">📰 University News</a>
+    <a class="link" href="https://www.youtube.com/" target="_blank">▶️ YouTube</a>
   </aside>
 
-  <section class="content" aria-live="polite">
+  <section class="content">
     <div class="top-cards">
       <div class="card">
         <h3>B.Sc</h3>
@@ -83,8 +82,8 @@ tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
     </div>
 
     <div id="studentTable" class="table-wrap">
-      <h3>Available Notes & YouTube Links</h3>
-      <table id="coursesTable" aria-describedby="List of uploaded entries">
+      <h3>Available Notes</h3>
+      <table>
         <thead>
           <tr><th>Course</th><th>Semester</th><th>Subject</th><th>YouTube</th><th>Uploaded At</th></tr>
         </thead>
@@ -94,10 +93,10 @@ tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
   </section>
 </main>
 
-<footer style="text-align:center;padding:12px;background:var(--card);color:var(--muted)">© 2025 PDUSU EDUCATION | Designed for Students</footer>
+<footer style="text-align:center;padding:12px;background:var(--card);color:var(--muted)">© 2025 PDUSU EDUCATION</footer>
 
-<div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
-  <div class="modal" id="modalContent" role="dialog" aria-modal="true"></div>
+<div id="modalBackdrop" class="modal-backdrop">
+  <div class="modal" id="modalContent"></div>
 </div>
 
 <script type="module">
@@ -117,9 +116,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 try{ getAnalytics(app);}catch(e){}
+
 const db = getFirestore(app);
 
-const PASSWORD_SHA256 = "77cce9ae9209d01fb54c53a30b682af6815ffafb70174876013cb24436df2ca2"; // Pdusu123
+const PASSWORD_SHA256 = "77cce9ae9209d01fb54c53a30b682af6815ffafb70174876013cb24436df2ca2"; 
 const COLLECTION = "courses";
 
 async function sha256Hex(input){
@@ -128,13 +128,17 @@ async function sha256Hex(input){
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
+
 function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
 function uuid(){ if(window.crypto && crypto.randomUUID) return crypto.randomUUID(); return 'id_'+Date.now(); }
 
 const modalBackdrop = document.getElementById('modalBackdrop');
 const modalContent = document.getElementById('modalContent');
-function showModal(html){ modalContent.innerHTML = html; modalBackdrop.style.display = 'flex'; modalBackdrop.setAttribute('aria-hidden','false'); }
-function closeModal(){ modalBackdrop.style.display = 'none'; modalBackdrop.setAttribute('aria-hidden','true'); }
+
+function showModal(html){ modalContent.innerHTML = html; modalBackdrop.style.display = 'flex'; }
+function closeModal(){ modalBackdrop.style.display = 'none'; }
+
 modalBackdrop.addEventListener('click', (e)=>{ if(e.target===modalBackdrop) closeModal(); });
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
 
@@ -197,10 +201,7 @@ async function renderTable(items){
   tbody.innerHTML = html;
 }
 
-async function loadAll(){
-  const items = await fetchAllCourses();
-  await renderTable(items);
-}
+async function loadAll(){ await renderTable(await fetchAllCourses()); }
 async function loadTable(course, sem){
   const all = await fetchAllCourses();
   const filtered = all.filter(i => i.course.toUpperCase() === course.toUpperCase() && Number(i.semester) === Number(sem));
@@ -224,33 +225,55 @@ document.getElementById('logo').addEventListener('click', async ()=>{
 
 function openAdmin(){
   showModal(`
-    <h2>Admin Panel — Add Entry</h2>
+    <h2>Admin Panel — Add Note</h2>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <label style="flex:1">
-        Course<br>
+      <label style="flex:1">Course<br>
         <select id="admCourse"><option value="BSC">BSC</option><option value="BA">BA</option><option value="BCOM">BCOM</option></select>
       </label>
-      <label style="flex:1">
-        Semester<br>
+      <label style="flex:1">Semester<br>
         <select id="admSem"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
       </label>
     </div>
     <div style="margin-top:10px">
-      <label>Subject name<br><input id="admSubject" type="text" placeholder="Subject name" style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee"></label>
+      <label>Subject name<br><input id="admSubject" type="text" style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee"></label>
     </div>
     <div style="margin-top:10px">
-      <label>YouTube Link (optional)<br><input id="admYouTube" type="url" placeholder="https://www.youtube.com/..." style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee"></label>
+      <label>YouTube Link (optional)<br><input id="admYouTube" type="url" style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee"></label>
     </div>
-    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+    <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn btn-primary" id="uploadBtn">Save</button>
       <button class="btn btn-ghost" onclick="closeModal()">Close</button>
       <button class="btn btn-ghost" onclick="openList()">Manage Entries</button>
     </div>
-    <hr>
-    <div id="adminMsg" class="note"></div>
+    <div id="adminMsg" class="note" style="margin-top:10px"></div>
   `);
 
   document.getElementById('uploadBtn').onclick = handleUpload;
+}
+
+async function handleUpload(){
+  const course = document.getElementById('admCourse').value;
+  const sem = Number(document.getElementById('admSem').value);
+  const subject = document.getElementById('admSubject').value.trim();
+  const youtube = document.getElementById('admYouTube').value.trim();
+  const adminMsg = document.getElementById('adminMsg');
+  adminMsg.textContent = '';
+
+  if(!subject){ adminMsg.textContent = 'कृपया Subject name भरें'; return; }
+
+  try{
+    await addDoc(collection(db, COLLECTION), {
+      course, semester: sem, subject, youtube: youtube||'', uploadedAt: serverTimestamp()
+    });
+    adminMsg.textContent = 'Saved successfully!';
+    document.getElementById('admSubject').value='';
+    document.getElementById('admYouTube').value='';
+    loadAll();
+    openList();
+  }catch(err){
+    console.error(err);
+    adminMsg.textContent = 'Error: '+err.message;
+  }
 }
 
 async function openList(){
@@ -263,36 +286,13 @@ async function openList(){
       ${it.youtube?`<a href="${esc(it.youtube)}" target="_blank">YouTube</a>`:''}
     </div>`;
   });
-  listHtml += '</div>';
-  showModal(`<h3>Existing Entries</h3>${listHtml}<div style="margin-top:10px"><button class="btn btn-ghost" onclick="openAdmin()">Back</button></div>`);
-}
-
-async function handleUpload(){
-  const course = document.getElementById('admCourse').value;
-  const sem = Number(document.getElementById('admSem').value);
-  const subject = document.getElementById('admSubject').value.trim();
-  const youtube = document.getElementById('admYouTube').value.trim();
-  const adminMsg = document.getElementById('adminMsg');
-  adminMsg.textContent = '';
-  if(!subject){ adminMsg.textContent = 'कृपया Subject name भरें'; return; }
-
-  await addDoc(collection(db, COLLECTION), {
-    course: course,
-    semester: sem,
-    subject: subject,
-    youtube: youtube || '',
-    uploadedAt: serverTimestamp()
-  });
-
-  adminMsg.textContent = 'Entry saved successfully!';
-  document.getElementById('admSubject').value = '';
-  document.getElementById('admYouTube').value = '';
-  await loadAll();
-  openList();
+  listHtml += '</div><div style="margin-top:10px"><button class="btn btn-ghost" onclick="openAdmin()">Back</button></div>`;
+  showModal(listHtml);
 }
 
 renderSemesters();
 loadAll();
+
 </script>
 </body>
 </html>
