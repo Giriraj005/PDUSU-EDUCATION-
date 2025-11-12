@@ -1,284 +1,393 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>🎓 PDUSU EDUCATION</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
-
+<meta name="theme-color" content="#2563eb" />
 <style>
-:root{--bg:#f8fafc;--card:#fff;--muted:#475569;--accent:#2563eb;}
-body{font-family:Arial,sans-serif;margin:0;background:var(--bg);color:#0f172a;min-height:100vh;display:flex;flex-direction:column;}
-header{display:flex;align-items:center;gap:12px;background:#fff;padding:16px;box-shadow:0 2px 6px rgba(0,0,0,.08);}
-header img{height:60px;cursor:pointer;}
-header h1{margin:0;font-size:22px;}
-header p{margin:0;font-size:14px;color:var(--muted);}
-nav{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;padding:15px;background:#e2e8f0;}
-button, .btn{padding:10px 20px;border:none;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer;transition:.15s;font-size:14px;}
-button:hover,.btn:hover{background:#1e40af;}
-.content{padding:15px;max-width:1200px;margin:0 auto;flex:1;}
-.semester{display:none;animation:fadeSlide .3s ease;}
-@keyframes fadeSlide{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
-.semester-columns{display:flex;flex-wrap:wrap;gap:12px;margin-top:15px;}
-.column{flex:1 1 250px;background:var(--card);padding:12px;border-radius:10px;box-shadow:0 1px 5px rgba(0,0,0,.07);}
-.column h3{margin-top:0;color:var(--accent);}
-.class-card{background:#f1f5f9;border-radius:8px;padding:10px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
-.class-card a{color:var(--accent);text-decoration:none;word-break:break-word;}
-.footer-links{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:10px;}
-.footer-links a{background:var(--accent);color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;transition:.15s;font-size:14px;}
-.footer-links a:hover{background:#1e40af;}
-footer{text-align:center;padding:20px;background:#e2e8f0;color:var(--muted);font-size:14px;}
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:50;}
-.modal{background:#fff;border-radius:10px;padding:18px;width:90%;max-width:520px;box-shadow:0 8px 30px rgba(2,6,23,.2);overflow:auto;max-height:90vh;}
-label{display:block;margin-top:8px;font-size:14px;}
-input[type="text"],select,input[type="url"]{width:100%;padding:10px;border:1px solid #e6e9ef;border-radius:8px;margin-top:6px;}
-.admin-controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
-.danger{background:#ef4444;}
-.small{font-size:13px;padding:8px 10px;border-radius:6px;}
-.note{color:#6b7280;font-size:13px;margin-top:8px;}
-
-/* Responsive */
-@media(max-width:768px){
-  .semester-columns{flex-direction:column;}
-  .column{flex:1 1 100%;}
-  button, .btn, .footer-links a{width:100%;text-align:center;}
-  header{flex-direction:column;align-items:flex-start;}
-  header img{margin-bottom:8px;}
+:root{
+  --bg:#f8fafc;--text:#0f172a;--card:#fff;--muted:#475569;--accent:#2563eb;--glass:rgba(255,255,255,0.6);
 }
+[data-theme="dark"]{--bg:#0b1220;--text:#e6eef8;--card:#0f1724;--muted:#94a3b8;--accent:#3b82f6;--glass:rgba(255,255,255,0.03)}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;background:linear-gradient(90deg,#6366f1,#ec4899,#f59e0b);color:#fff}
+.header-left{display:flex;gap:14px;align-items:center}
+#logo{width:80px;height:80px;border-radius:10px;background:#fff;padding:6px;cursor:pointer;object-fit:cover;box-shadow:0 6px 18px rgba(0,0,0,0.12)}
+.header-title h1{margin:0;font-size:20px}
+.header-title p{margin:4px 0 0 0;font-size:13px;opacity:.95}
+.theme-toggle{background:rgba(255,255,255,0.95);color:var(--accent);border:none;padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:700}
+.main-wrap{width:95%;max-width:1200px;margin:20px auto;display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.sidebar{width:240px;min-width:200px;background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.06)}
+.sidebar h3{margin:0 0 8px 0}
+.link{display:block;text-align:center;background:var(--accent);color:#fff;padding:10px;border-radius:8px;margin:8px 0;text-decoration:none;font-weight:700}
+.content{flex:1;min-width:300px}
+.top-cards{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.card{background:var(--card);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.06);flex:1;min-width:220px}
+.card h3{margin:0 0 8px 0;color:var(--accent)}
+.semester-list{display:flex;gap:8px;flex-wrap:wrap}
+.sem-btn{padding:8px 12px;border-radius:8px;border:none;background:#f1f5f9;color:var(--text);cursor:pointer;font-weight:700}
+.sem-btn:hover{background:rgba(37,99,235,0.08)}
+.note{font-size:13px;color:var(--muted);margin-top:8px}
+
+/* Table for student view */
+.table-wrap{background:var(--card);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.06);overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead th{position:sticky;top:0;background:var(--card);padding:10px;text-align:left;border-bottom:1px solid rgba(0,0,0,0.06)}
+tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
+.btn{padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-ghost{background:transparent;border:1px solid rgba(0,0,0,0.06)}
+.progress{height:10px;background:#f1f5f9;border-radius:8px;overflow:hidden;margin-top:6px}
+.progress > i{display:block;height:100%;background:var(--accent);width:0%}
+
+/* modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;z-index:200}
+.modal{background:var(--card);width:92%;max-width:720px;border-radius:12px;padding:18px;box-shadow:0 20px 60px rgba(2,6,23,0.4);max-height:86vh;overflow:auto}
+
+/* responsive */
+@media(max-width:900px){.main-wrap{padding:0 12px}.sidebar{width:100%}.top-cards{flex-direction:column}}
 </style>
 </head>
 <body>
 
 <header>
-  <img id="logo" src="PDUSU-logo.png" alt="PDUSU Logo" onerror="this.style.opacity='.25'">
+  <div class="header-left">
+    <img id="logo" src="PDUSU-logo.png" alt="PDUSU Logo">
+    <div class="header-title">
+      <h1>🎓 PDUSU EDUCATION</h1>
+      <p>मेहनत ही सफलता की कुंजी है — आगे बढ़ते रहो, छात्रो!</p>
+    </div>
+  </div>
   <div>
-    <h1>🎓 PDUSU EDUCATION</h1>
-    <p>Pandit Deendayal Upadhyaya Shekhawati University, Sikar</p>
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌞 Light</button>
   </div>
 </header>
 
-<nav>
-  <button onclick="showSemester(1)">Semester 1</button>
-  <button onclick="showSemester(2)">Semester 2</button>
-  <button onclick="showSemester(3)">Semester 3</button>
-  <button onclick="showSemester(4)">Semester 4</button>
-  <button onclick="showSemester(5)">Semester 5</button>
-  <button onclick="showSemester(6)">Semester 6</button>
-</nav>
+<main class="main-wrap">
+  <aside class="sidebar" aria-label="Useful links">
+    <h3>महत्वपूर्ण लिंक्स</h3>
+    <a class="link" href="https://shekhauniexam.in/" target="_blank" rel="noopener">📄 Result</a>
+    <a class="link" href="https://shekhauni.ac.in/Home/Syllabus" target="_blank" rel="noopener">📘 Syllabus</a>
+    <a class="link" href="https://shekhauni.ac.in/Home/Examination" target="_blank" rel="noopener">📰 University News</a>
+    <a class="link" href="https://www.youtube.com/" target="_blank" rel="noopener">▶️ YouTube</a>
+    <p class="note">Logo पर तीन बार क्लिक करें → Admin panel (Password protected)</p>
+  </aside>
 
-<div class="content">
-  <div class="footer-links">
-    <a href="https://shekhauniexam.in/" target="_blank">Result</a>
-    <a href="https://shekhauni.ac.in/Home/Syllabus" target="_blank">Syllabus</a>
-    <a href="https://shekhauni.ac.in/Home/Examination" target="_blank">University News</a>
-  </div>
+  <section class="content" aria-live="polite">
+    <div class="top-cards">
+      <div class="card">
+        <h3>B.Sc</h3>
+        <div class="semester-list" id="bscList"></div>
+      </div>
+      <div class="card">
+        <h3>B.A.</h3>
+        <div class="semester-list" id="baList"></div>
+      </div>
+      <div class="card">
+        <h3>B.Com</h3>
+        <div class="semester-list" id="bcomList"></div>
+      </div>
+    </div>
 
-  <div id="sem1" class="semester"><h2>📘 Semester 1</h2><div class="semester-columns"></div></div>
-  <div id="sem2" class="semester"><h2>📗 Semester 2</h2><div class="semester-columns"></div></div>
-  <div id="sem3" class="semester"><h2>📙 Semester 3</h2><div class="semester-columns"></div></div>
-  <div id="sem4" class="semester"><h2>📒 Semester 4</h2><div class="semester-columns"></div></div>
-  <div id="sem5" class="semester"><h2>📕 Semester 5</h2><div class="semester-columns"></div></div>
-  <div id="sem6" class="semester"><h2>📚 Semester 6</h2><div class="semester-columns"></div></div>
+    <div id="studentTable" class="table-wrap">
+      <h3>Available Notes & PDFs</h3>
+      <table id="coursesTable" aria-describedby="List of uploaded PDFs">
+        <thead>
+          <tr><th>Course</th><th>Semester</th><th>Subject</th><th>YouTube</th><th>PDF</th><th>Uploaded At</th></tr>
+        </thead>
+        <tbody id="coursesBody"><tr><td colspan="6" class="note">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+</main>
 
-  <p class="note">Triple-click the logo to access the admin panel.</p>
+<footer style="text-align:center;padding:12px;background:var(--card);color:var(--muted)">© 2025 PDUSU EDUCATION | Designed for Students</footer>
+
+<!-- Modal -->
+<div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+  <div class="modal" id="modalContent" role="dialog" aria-modal="true"></div>
 </div>
 
-<footer>© 2025 PDUSU EDUCATION | Designed for University Students</footer>
+<!-- Firebase + App script -->
+<script type="module">
+/* ================== Firebase Config ==================
+   (आपने जो दिया था वही config यहाँ embed कर रहा हूँ)
+   अगर आपने अलग config बनायी है तो इसे बदल दें */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
+import {
+  getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import {
+  getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
 
-<div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
-  <div class="modal" role="document">
-    <div id="modalContent"></div>
-  </div>
-</div>
+const firebaseConfig = {
+  apiKey: "AIzaSyADiTKwpQ2uW5DTo8lUp44TDAbSPQ3ntMQ",
+  authDomain: "pdusu-education-4503b.firebaseapp.com",
+  projectId: "pdusu-education-4503b",
+  storageBucket: "pdusu-education-4503b.firebasestorage.app",
+  messagingSenderId: "186812462719",
+  appId: "1:186812462719:web:2108c8d68c12ff2b9f314a",
+  measurementId: "G-4YT9MXGYWS"
+};
 
-<script>
-// ---------- Config ----------
+const app = initializeApp(firebaseConfig);
+try{ getAnalytics(app);}catch(e){/* analytics may fail on local file, ignore */ }
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+/* ================== App logic ================== */
+
+/* Config */
 const PASSWORD_SHA256 = "8abf09e0892662c4b8945de98ac87f804fdf1bc1e8545ecebb570683a68b4928"; // 9828
-const STORAGE_KEY = "pdusu_classes_v3";
+const COLLECTION = "courses";
 
-// ---------- Helpers ----------
+/* Helpers */
 async function sha256Hex(input){
   const enc = new TextEncoder();
   const data = enc.encode(input);
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
-function loadClasses(){ return JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]"); }
-function saveClasses(list){ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function escapeAttr(s){ return String(s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function uuid(){ if(window.crypto && crypto.randomUUID) return crypto.randomUUID(); return 'id_'+Date.now(); }
 
-// ---------- Render ----------
-function renderAll(){
-  for(let s=1;s<=6;s++){
-    const container = document.querySelector("#sem"+s+" .semester-columns");
-    container.innerHTML = "";
-    const streams = ["BA","BSc","B.Com"];
-    streams.forEach(stream=>{
-      const col = document.createElement("div");
-      col.className = "column";
-      col.innerHTML = `<h3>${stream}</h3>`;
-      const items = loadClasses().filter(c => Number(c.semester) === s && (c.stream || "") === stream);
-      if(items.length === 0){ col.innerHTML += `<p class='note'>No classes yet.</p>`; }
-      items.forEach(it=>{
-        const card = document.createElement("div"); card.className="class-card";
-        let html="";
-        if(it.class_name) html+=`<h4>${escapeHtml(it.class_name)}</h4>`;
-        if(it.youtube_link) html+=`<p><a href="${escapeAttr(it.youtube_link)}" target="_blank">▶ YouTube</a></p>`;
-        if(it.pdf_url) html+=`<p><a href="${escapeAttr(it.pdf_url)}" target="_blank">📄 PDF</a></p>`;
-        card.innerHTML = html;
-        col.appendChild(card);
-      });
-      container.appendChild(col);
+/* Modal helpers */
+const modalBackdrop = document.getElementById('modalBackdrop');
+const modalContent = document.getElementById('modalContent');
+function showModal(html){ modalContent.innerHTML = html; modalBackdrop.style.display = 'flex'; modalBackdrop.setAttribute('aria-hidden','false'); }
+function closeModal(){ modalBackdrop.style.display = 'none'; modalBackdrop.setAttribute('aria-hidden','true'); }
+modalBackdrop.addEventListener('click', (e)=>{ if(e.target===modalBackdrop) closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+/* Theme system (same as before) */
+const root = document.documentElement;
+const themeToggle = document.getElementById('themeToggle');
+function applyTheme(t){ if(t==='dark') root.setAttribute('data-theme','dark'); else root.removeAttribute('data-theme'); themeToggle.textContent = t==='dark'?'🌙 Dark':'🌞 Light'; localStorage.setItem('pdusu_theme', t); }
+(function(){ const saved = localStorage.getItem('pdusu_theme')||'light'; applyTheme(saved); })();
+themeToggle.addEventListener('click', ()=>{ const current = root.getAttribute('data-theme')==='dark' ? 'dark' : 'light'; applyTheme(current==='dark'?'light':'dark'); });
+
+/* Render semester buttons */
+function renderSemesters(){
+  const map = [{id:'bscList',label:'BSC'},{id:'baList',label:'BA'},{id:'bcomList',label:'BCOM'}];
+  map.forEach(m=>{
+    const el = document.getElementById(m.id);
+    el.innerHTML = '';
+    for(let i=1;i<=6;i++){
+      const b = document.createElement('button');
+      b.className='sem-btn';
+      b.textContent = 'Sem ' + i;
+      b.onclick = ()=> loadTable(m.label, i);
+      el.appendChild(b);
+    }
+  });
+}
+
+/* Load courses from Firestore and render table (optionally filter) */
+async function fetchAllCourses(){
+  const colRef = collection(db, COLLECTION);
+  // ordered by course, semester
+  const q = query(colRef, orderBy('course'), orderBy('semester'));
+  const snap = await getDocs(q);
+  const items = [];
+  snap.forEach(doc => {
+    const d = doc.data();
+    items.push({
+      id: doc.id,
+      course: d.course || d.stream || '',
+      semester: d.semester || d.sem || 0,
+      subject: d.subject || d.subject_name || d.class_name || '',
+      youtube: d.youtube_link || d.youtube || '',
+      pdf: d.pdfUrl || d.pdf_url || d.pdf || '',
+      uploadedAt: d.uploadedAt ? d.uploadedAt.toDate ? d.uploadedAt.toDate() : new Date(d.uploadedAt) : null
     });
+  });
+  return items;
+}
+
+async function renderTable(items){
+  const tbody = document.getElementById('coursesBody');
+  if(!items || items.length===0){
+    tbody.innerHTML = `<tr><td colspan="6" class="note">कोई नोट उपलब्ध नहीं है।</td></tr>`;
+    return;
   }
+  let html = '';
+  items.forEach(it=>{
+    html += `<tr>
+      <td>${esc(it.course)}</td>
+      <td>${esc(it.semester)}</td>
+      <td>${esc(it.subject)}</td>
+      <td>${it.youtube? `<a href="${esc(it.youtube)}" target="_blank">▶️ Open</a>` : '-'}</td>
+      <td>${it.pdf? `<a href="${esc(it.pdf)}" target="_blank" class="btn btn-primary">📥 Download</a>` : '-'}</td>
+      <td>${it.uploadedAt ? esc(it.uploadedAt.toLocaleString()) : '-'}</td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
 }
 
-// ---------- Semester selection ----------
-function showSemester(n){
-  document.querySelectorAll(".semester").forEach(s=>s.style.display="none");
-  document.getElementById("sem"+n).style.display="block";
+/* Load and show all by default */
+async function loadAll(){
+  const items = await fetchAllCourses();
+  await renderTable(items);
 }
-showSemester(1);
-renderAll();
+async function loadTable(course, sem){
+  const all = await fetchAllCourses();
+  const filtered = all.filter(i => i.course.toUpperCase() === course.toUpperCase() && Number(i.semester) === Number(sem));
+  await renderTable(filtered);
+  // scroll into view
+  document.getElementById('studentTable').scrollIntoView({behavior:'smooth'});
+}
 
-// ---------- Admin via triple-click logo ----------
-let clickCount=0;
+/* Admin trigger (triple click logo) */
+let clickCount = 0;
 document.getElementById('logo').addEventListener('click', async ()=>{
-  clickCount++; if(clickCount===3){ clickCount=0;
-    const pwd=prompt("Enter Admin Password:"); if(!pwd) return;
-    const hash=await sha256Hex(pwd); if(hash===PASSWORD_SHA256) openAdminPanel(); else alert("Incorrect password");
+  clickCount++;
+  if(clickCount===3){
+    clickCount=0;
+    const pwd = prompt("Admin Password डालें:");
+    if(!pwd) return;
+    const h = await sha256Hex(pwd);
+    if(h === PASSWORD_SHA256) openAdmin();
+    else alert("Password गलत है।");
   }
   setTimeout(()=>clickCount=0,1500);
 });
 
-// ---------- Modal ----------
-const modalBackdrop=document.getElementById("modalBackdrop");
-const modalContent=document.getElementById("modalContent");
-function showModal(html){ modalContent.innerHTML=html; modalBackdrop.style.display="flex"; }
-function closeModal(){ modalBackdrop.style.display="none"; }
-document.addEventListener('keydown', e=>{if(e.key==='Escape') closeModal();});
-
-// ---------- Admin Panel ----------
-function openAdminPanel(){
-  const classes = loadClasses(); let listHtml="";
-  if(classes.length===0){ listHtml="<p class='note'>No classes yet.</p>"; }
-  else{
-    listHtml='<div style="max-height:220px;overflow:auto;margin-top:8px">';
-    classes.slice().reverse().forEach(c=>{
-      listHtml+=`<div style="padding:8px;border-bottom:1px solid #eef2f7"><strong>Sem ${c.semester}</strong> ${c.stream?`(${c.stream})`:''} — ${c.class_name||'<em>Unnamed</em>'}<br><small>${c.youtube_link?`<a href="${escapeAttr(c.youtube_link)}" target="_blank">YouTube</a>`:''} ${c.pdf_url?`<a href="${escapeAttr(c.pdf_url)}" target="_blank">PDF</a>`:''}</small><div style="margin-top:6px"><button class="small" onclick="editClass('${c.id}')">Edit</button><button class="small danger" onclick="deleteClass('${c.id}')">Delete</button></div></div>`;
-    });
-    listHtml+="</div>";
-  }
-
+/* Open Admin Panel (with upload form) */
+function openAdmin(){
   showModal(`
-    <h3>Admin Panel</h3>
-    <form id="adminForm" onsubmit="return false;">
-      <label>Semester
-        <select id="admSemester"><option value="1">Semester 1</option><option value="2">Semester 2</option><option value="3">Semester 3</option><option value="4">Semester 4</option><option value="5">Semester 5</option><option value="6">Semester 6</option></select>
+    <h2>Admin Panel — Upload PDF</h2>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <label style="flex:1">
+        Course<br>
+        <select id="admCourse"><option value="BSC">BSC</option><option value="BA">BA</option><option value="BCOM">BCOM</option></select>
       </label>
-      <label>Stream
-        <select id="admStream"><option value="">None</option><option value="BA">BA</option><option value="BSc">BSc</option><option value="B.Com">B.Com</option></select>
+      <label style="flex:1">
+        Semester<br>
+        <select id="admSem"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
       </label>
-      <label>Class Name<input id="admClassName" type="text" placeholder="Economics Basics"></label>
-      <label>YouTube Link<input id="admYouTube" type="url" placeholder="https://www.youtube.com/watch?v=..."></label>
-      <label>PDF URL<input id="admPdfUrl" type="url" placeholder="https://example.com/notes.pdf"></label>
-      <div class="admin-controls">
-        <button class="btn" onclick="saveNewClass()">Add / Save</button>
-        <button class="small" onclick="closeModal()">Close</button>
-      </div>
-    </form>
+    </div>
+    <div style="margin-top:10px">
+      <label>Subject name<br><input id="admSubject" type="text" placeholder="Subject name" style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee"></label>
+    </div>
+    <div style="margin-top:10px">
+      <label>YouTube Link (optional)<br><input id="admYouTube" type="url" placeholder="https://www.youtube.com/..." style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee"></label>
+    </div>
+    <div style="margin-top:10px">
+      <label>PDF File (required)<br><input id="admPdfFile" type="file" accept="application/pdf" style="width:100%"></label>
+      <div class="progress" style="display:none;margin-top:8px"><i style="width:0%"></i></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+      <button class="btn btn-primary" id="uploadBtn">Upload & Save</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+      <button class="btn btn-ghost" onclick="openList()">Manage Entries</button>
+    </div>
     <hr>
-    <h4>Existing classes</h4>
-    ${listHtml}
-    <div style="margin-top:8px"><button class="small danger" onclick="wipeData()">Wipe all local data</button></div>
+    <div id="adminMsg" class="note"></div>
   `);
+
+  document.getElementById('uploadBtn').onclick = handleUpload;
 }
 
-// Admin actions
-function saveNewClass(){
-  const sem = parseInt(document.getElementById("admSemester").value);
-  const stream = document.getElementById("admStream").value || null;
-  const name = document.getElementById("admClassName").value.trim() || null;
-  const yt = document.getElementById("admYouTube").value.trim() || null;
-  const pdf = document.getElementById("admPdfUrl").value.trim() || null;
-  const list = loadClasses();
-  list.push({id:crypto.randomUUID?crypto.randomUUID():'id_'+Date.now(),semester:sem,stream:stream,class_name:name,youtube_link:yt,pdf_url:pdf,created_at:new Date().toISOString()});
-  saveClasses(list);
-  renderAll(); // refresh view immediately
-  alert("Saved");
-  openAdminPanel();
+/* Manage existing entries (list) */
+async function openList(){
+  const items = await fetchAllCourses();
+  let listHtml = '<div style="max-height:300px;overflow:auto">';
+  if(items.length===0) listHtml += '<p class="note">कोई एंट्री नहीं मिली।</p>';
+  items.slice().reverse().forEach(it=>{
+    listHtml += `<div style="padding:8px;border-bottom:1px solid rgba(0,0,0,0.04)">
+      <strong>${esc(it.course)} Sem ${esc(it.semester)}</strong> — ${esc(it.subject)}<br>
+      ${it.youtube?`<a href="${esc(it.youtube)}" target="_blank">YouTube</a>`:''}
+      ${it.pdf?` | <a href="${esc(it.pdf)}" target="_blank">PDF</a>`:''}
+    </div>`;
+  });
+  listHtml += '</div>';
+  showModal(`<h3>Existing Entries</h3>${listHtml}<div style="margin-top:10px"><button class="btn btn-ghost" onclick="openAdmin()">Back</button></div>`);
 }
 
-function editClass(id){
-  const c = loadClasses().find(x=>x.id===id);
-  if(!c) return alert("Not found");
-  showModal(`
-    <h3>Edit Class</h3>
-    <form id="adminForm" onsubmit="return false;">
-      <label>Semester
-        <select id="admSemester">
-          <option ${c.semester===1?'selected':''} value="1">Semester 1</option>
-          <option ${c.semester===2?'selected':''} value="2">Semester 2</option>
-          <option ${c.semester===3?'selected':''} value="3">Semester 3</option>
-          <option ${c.semester===4?'selected':''} value="4">Semester 4</option>
-          <option ${c.semester===5?'selected':''} value="5">Semester 5</option>
-          <option ${c.semester===6?'selected':''} value="6">Semester 6</option>
-        </select>
-      </label>
-      <label>Stream
-        <select id="admStream">
-          <option ${!c.stream?'selected':''} value="">None</option>
-          <option ${c.stream==='BA'?'selected':''} value="BA">BA</option>
-          <option ${c.stream==='BSc'?'selected':''} value="BSc">BSc</option>
-          <option ${c.stream==='B.Com'?'selected':''} value="B.Com">B.Com</option>
-        </select>
-      </label>
-      <label>Class Name<input id="admClassName" type="text" value="${escapeAttr(c.class_name)}"></label>
-      <label>YouTube Link<input id="admYouTube" type="url" value="${escapeAttr(c.youtube_link)}"></label>
-      <label>PDF URL<input id="admPdfUrl" type="url" value="${escapeAttr(c.pdf_url)}"></label>
-      <div class="admin-controls">
-        <button class="btn" onclick="saveEditedClass('${c.id}')">Save</button>
-        <button class="small" onclick="openAdminPanel()">Cancel</button>
-      </div>
-    </form>
-  `);
-}
+/* Handle PDF upload -> Storage -> getDownloadURL -> add doc to Firestore */
+async function handleUpload(){
+  const course = document.getElementById('admCourse').value;
+  const sem = Number(document.getElementById('admSem').value);
+  const subject = document.getElementById('admSubject').value.trim();
+  const youtube = document.getElementById('admYouTube').value.trim();
+  const fileInput = document.getElementById('admPdfFile');
+  const file = fileInput.files && fileInput.files[0];
 
-function saveEditedClass(id){
-  const sem = parseInt(document.getElementById("admSemester").value);
-  const stream = document.getElementById("admStream").value || null;
-  const name = document.getElementById("admClassName").value.trim() || null;
-  const yt = document.getElementById("admYouTube").value.trim() || null;
-  const pdf = document.getElementById("admPdfUrl").value.trim() || null;
-  const list = loadClasses();
-  const idx = list.findIndex(x=>x.id===id);
-  if(idx>=0){
-    list[idx] = {...list[idx], semester:sem, stream:stream, class_name:name, youtube_link:yt, pdf_url:pdf, created_at:new Date().toISOString()};
+  const adminMsg = document.getElementById('adminMsg');
+  adminMsg.textContent = '';
+
+  if(!subject){ adminMsg.textContent = 'कृपया Subject name भरें'; return; }
+  if(!file){ adminMsg.textContent = 'कृपया PDF file चुनें'; return; }
+  if(file.type !== 'application/pdf'){ adminMsg.textContent = 'कृपया केवल PDF फाइल अपलोड करें'; return; }
+
+  // prepare UI
+  const progressBar = modalContent.querySelector('.progress');
+  const progressBarInner = progressBar.querySelector('i');
+  progressBar.style.display = 'block';
+  progressBarInner.style.width = '0%';
+  document.getElementById('uploadBtn').disabled = true;
+  document.getElementById('uploadBtn').textContent = 'Uploading...';
+
+  try{
+    // create storage path: courses/{course}/sem{sem}/{uuid}.pdf
+    const path = `courses/${course.toLowerCase()}/sem${sem}/${uuid()}.pdf`;
+    const sRef = storageRef(storage, path);
+    const uploadTask = uploadBytesResumable(sRef, file);
+
+    // wait for progress & completion
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        progressBarInner.style.width = percent + '%';
+      },
+      (err) => {
+        console.error(err);
+        adminMsg.textContent = 'Upload failed: ' + err.message;
+        document.getElementById('uploadBtn').disabled = false;
+        document.getElementById('uploadBtn').textContent = 'Upload & Save';
+      },
+      async () => {
+        // complete
+        const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+        // save metadata to Firestore
+        const docRef = await addDoc(collection(db, COLLECTION), {
+          course: course,
+          semester: sem,
+          subject: subject,
+          youtube: youtube || '',
+          pdfUrl: downloadUrl,
+          uploadedAt: serverTimestamp()
+        });
+        adminMsg.textContent = 'Uploaded and saved successfully!';
+        // reset inputs
+        document.getElementById('admSubject').value = '';
+        document.getElementById('admYouTube').value = '';
+        document.getElementById('admPdfFile').value = '';
+        progressBar.style.display = 'none';
+        document.getElementById('uploadBtn').disabled = false;
+        document.getElementById('uploadBtn').textContent = 'Upload & Save';
+        // refresh main table
+        await loadAll();
+        // show list or success
+        openList();
+      }
+    );
+  }catch(err){
+    console.error(err);
+    adminMsg.textContent = 'Error: ' + err.message;
+    document.getElementById('uploadBtn').disabled = false;
+    document.getElementById('uploadBtn').textContent = 'Upload & Save';
   }
-  saveClasses(list);
-  renderAll(); // refresh view immediately
-  openAdminPanel();
-  alert("Updated");
 }
 
-function deleteClass(id){
-  if(!confirm("Delete this class?")) return;
-  let list = loadClasses();
-  list = list.filter(x=>x.id!==id);
-  saveClasses(list);
-  renderAll(); // refresh view immediately
-  openAdminPanel();
-}
+/* ---------------- Init ---------------- */
+renderSemesters();
+loadAll();
 
-function wipeData(){
-  if(confirm("Remove ALL local classes? This cannot be undone.")){
-    localStorage.removeItem(STORAGE_KEY);
-    renderAll();
-    openAdminPanel();
-  }
-}
 </script>
 </body>
 </html>
