@@ -30,8 +30,6 @@ header{display:flex;justify-content:space-between;align-items:center;padding:18p
 .sem-btn{padding:8px 12px;border-radius:8px;border:none;background:#f1f5f9;color:var(--text);cursor:pointer;font-weight:700}
 .sem-btn:hover{background:rgba(37,99,235,0.08)}
 .note{font-size:13px;color:var(--muted);margin-top:8px}
-
-/* Table for student view */
 .table-wrap{background:var(--card);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.06);overflow:auto}
 table{width:100%;border-collapse:collapse;font-size:14px}
 thead th{position:sticky;top:0;background:var(--card);padding:10px;text-align:left;border-bottom:1px solid rgba(0,0,0,0.06)}
@@ -39,14 +37,8 @@ tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
 .btn{padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
 .btn-primary{background:var(--accent);color:#fff}
 .btn-ghost{background:transparent;border:1px solid rgba(0,0,0,0.06)}
-.progress{height:10px;background:#f1f5f9;border-radius:8px;overflow:hidden;margin-top:6px}
-.progress > i{display:block;height:100%;background:var(--accent);width:0%}
-
-/* modal */
 .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;z-index:200}
 .modal{background:var(--card);width:92%;max-width:720px;border-radius:12px;padding:18px;box-shadow:0 20px 60px rgba(2,6,23,0.4);max-height:86vh;overflow:auto}
-
-/* responsive */
 @media(max-width:900px){.main-wrap{padding:0 12px}.sidebar{width:100%}.top-cards{flex-direction:column}}
 </style>
 </head>
@@ -91,12 +83,12 @@ tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
     </div>
 
     <div id="studentTable" class="table-wrap">
-      <h3>Available Notes & PDFs</h3>
-      <table id="coursesTable" aria-describedby="List of uploaded PDFs">
+      <h3>Available Notes & YouTube Links</h3>
+      <table id="coursesTable" aria-describedby="List of uploaded entries">
         <thead>
-          <tr><th>Course</th><th>Semester</th><th>Subject</th><th>YouTube</th><th>PDF</th><th>Uploaded At</th></tr>
+          <tr><th>Course</th><th>Semester</th><th>Subject</th><th>YouTube</th><th>Uploaded At</th></tr>
         </thead>
-        <tbody id="coursesBody"><tr><td colspan="6" class="note">Loading...</td></tr></tbody>
+        <tbody id="coursesBody"><tr><td colspan="5" class="note">Loading...</td></tr></tbody>
       </table>
     </div>
   </section>
@@ -112,7 +104,6 @@ tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyADiTKwpQ2uW5DTo8lUp44TDAbSPQ3ntMQ",
@@ -127,9 +118,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 try{ getAnalytics(app);}catch(e){}
 const db = getFirestore(app);
-const storage = getStorage(app);
 
-const PASSWORD_SHA256 = "77cce9ae9209d01fb54c53a30b682af6815ffafb70174876013cb24436df2ca2";
+const PASSWORD_SHA256 = "77cce9ae9209d01fb54c53a30b682af6815ffafb70174876013cb24436df2ca2"; // Pdusu123
 const COLLECTION = "courses";
 
 async function sha256Hex(input){
@@ -178,11 +168,10 @@ async function fetchAllCourses(){
     const d = doc.data();
     items.push({
       id: doc.id,
-      course: d.course || d.stream || '',
-      semester: d.semester || d.sem || 0,
-      subject: d.subject || d.subject_name || d.class_name || '',
-      youtube: d.youtube_link || d.youtube || '',
-      pdf: d.pdfUrl || d.pdf_url || d.pdf || '',
+      course: d.course || '',
+      semester: d.semester || 0,
+      subject: d.subject || '',
+      youtube: d.youtube || '',
       uploadedAt: d.uploadedAt ? d.uploadedAt.toDate ? d.uploadedAt.toDate() : new Date(d.uploadedAt) : null
     });
   });
@@ -192,7 +181,7 @@ async function fetchAllCourses(){
 async function renderTable(items){
   const tbody = document.getElementById('coursesBody');
   if(!items || items.length===0){
-    tbody.innerHTML = `<tr><td colspan="6" class="note">कोई नोट उपलब्ध नहीं है।</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" class="note">कोई नोट उपलब्ध नहीं है।</td></tr>`;
     return;
   }
   let html = '';
@@ -202,7 +191,6 @@ async function renderTable(items){
       <td>${esc(it.semester)}</td>
       <td>${esc(it.subject)}</td>
       <td>${it.youtube? `<a href="${esc(it.youtube)}" target="_blank">▶️ Open</a>` : '-'}</td>
-      <td>${it.pdf? `<a href="${esc(it.pdf)}" target="_blank" class="btn btn-primary">📥 Download</a>` : '-'}</td>
       <td>${it.uploadedAt ? esc(it.uploadedAt.toLocaleString()) : '-'}</td>
     </tr>`;
   });
@@ -236,7 +224,7 @@ document.getElementById('logo').addEventListener('click', async ()=>{
 
 function openAdmin(){
   showModal(`
-    <h2>Admin Panel — Upload PDF (Optional)</h2>
+    <h2>Admin Panel — Add Entry</h2>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <label style="flex:1">
         Course<br>
@@ -253,12 +241,8 @@ function openAdmin(){
     <div style="margin-top:10px">
       <label>YouTube Link (optional)<br><input id="admYouTube" type="url" placeholder="https://www.youtube.com/..." style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee"></label>
     </div>
-    <div style="margin-top:10px">
-      <label>PDF File (optional)<br><input id="admPdfFile" type="file" accept="application/pdf" style="width:100%"></label>
-      <div class="progress" style="display:none;margin-top:8px"><i style="width:0%"></i></div>
-    </div>
     <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
-      <button class="btn btn-primary" id="uploadBtn">Upload & Save</button>
+      <button class="btn btn-primary" id="uploadBtn">Save</button>
       <button class="btn btn-ghost" onclick="closeModal()">Close</button>
       <button class="btn btn-ghost" onclick="openList()">Manage Entries</button>
     </div>
@@ -277,8 +261,38 @@ async function openList(){
     listHtml += `<div style="padding:8px;border-bottom:1px solid rgba(0,0,0,0.04)">
       <strong>${esc(it.course)} Sem ${esc(it.semester)}</strong> — ${esc(it.subject)}<br>
       ${it.youtube?`<a href="${esc(it.youtube)}" target="_blank">YouTube</a>`:''}
-      ${it.pdf?` | <a href="${esc(it.pdf)}" target="_blank">PDF</a>`:''}
     </div>`;
   });
   listHtml += '</div>';
-  showModal(`<h3>Existing Entries</h3>${listHtml}<div style="margin-top:10px"><button class="btn btn-ghost" onclick="openAdmin()">Back</button></
+  showModal(`<h3>Existing Entries</h3>${listHtml}<div style="margin-top:10px"><button class="btn btn-ghost" onclick="openAdmin()">Back</button></div>`);
+}
+
+async function handleUpload(){
+  const course = document.getElementById('admCourse').value;
+  const sem = Number(document.getElementById('admSem').value);
+  const subject = document.getElementById('admSubject').value.trim();
+  const youtube = document.getElementById('admYouTube').value.trim();
+  const adminMsg = document.getElementById('adminMsg');
+  adminMsg.textContent = '';
+  if(!subject){ adminMsg.textContent = 'कृपया Subject name भरें'; return; }
+
+  await addDoc(collection(db, COLLECTION), {
+    course: course,
+    semester: sem,
+    subject: subject,
+    youtube: youtube || '',
+    uploadedAt: serverTimestamp()
+  });
+
+  adminMsg.textContent = 'Entry saved successfully!';
+  document.getElementById('admSubject').value = '';
+  document.getElementById('admYouTube').value = '';
+  await loadAll();
+  openList();
+}
+
+renderSemesters();
+loadAll();
+</script>
+</body>
+</html>
