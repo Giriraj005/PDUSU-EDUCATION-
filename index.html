@@ -1,198 +1,204 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PDUSU Admin Panel</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; background: #f5f5f5; }
-    h2 { text-align: center; color: #333; }
-    label { display: block; margin-top: 10px; font-weight: bold; }
-    input, select, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 8px; border: 1px solid #ccc; }
-    button { background: #007bff; color: white; font-weight: bold; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    .progress { display: none; background: #ddd; border-radius: 10px; height: 8px; margin-top: 10px; overflow: hidden; }
-    .progress i { display: block; height: 100%; width: 0%; background: #4caf50; transition: width 0.3s; }
-    #adminMsg { margin-top: 10px; font-weight: bold; }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>🎓 PDUSU EDUCATION</title>
+<meta name="theme-color" content="#2563eb" />
+<style>
+:root{
+  --bg:#f8fafc;--text:#0f172a;--card:#fff;--muted:#475569;--accent:#2563eb;--glass:rgba(255,255,255,0.6);
+}
+[data-theme="dark"]{--bg:#0b1220;--text:#e6eef8;--card:#0f1724;--muted:#94a3b8;--accent:#3b82f6;--glass:rgba(255,255,255,0.03)}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;background:linear-gradient(90deg,#6366f1,#ec4899,#f59e0b);color:#fff}
+.header-left{display:flex;gap:14px;align-items:center}
+#logo{width:80px;height:80px;border-radius:10px;background:#fff;padding:6px;cursor:pointer;object-fit:cover;box-shadow:0 6px 18px rgba(0,0,0,0.12)}
+.header-title h1{margin:0;font-size:20px}
+.header-title p{margin:4px 0 0 0;font-size:13px;opacity:.95}
+.theme-toggle{background:rgba(255,255,255,0.95);color:var(--accent);border:none;padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:700}
+.main-wrap{width:95%;max-width:1200px;margin:20px auto;display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.sidebar{width:240px;min-width:200px;background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.06)}
+.sidebar h3{margin:0 0 8px 0}
+.link{display:block;text-align:center;background:var(--accent);color:#fff;padding:10px;border-radius:8px;margin:8px 0;text-decoration:none;font-weight:700}
+.content{flex:1;min-width:300px}
+.top-cards{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.card{background:var(--card);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.06);flex:1;min-width:220px}
+.card h3{margin:0 0 8px 0;color:var(--accent)}
+.semester-list{display:flex;gap:8px;flex-wrap:wrap}
+.sem-btn{padding:8px 12px;border-radius:8px;border:none;background:#f1f5f9;color:var(--text);cursor:pointer;font-weight:700}
+.sem-btn:hover{background:rgba(37,99,235,0.08)}
+.note{font-size:13px;color:var(--muted);margin-top:8px}
+.table-wrap{background:var(--card);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.06);overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead th{position:sticky;top:0;background:var(--card);padding:10px;text-align:left;border-bottom:1px solid rgba(0,0,0,0.06)}
+tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
+.btn{padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-ghost{background:transparent;border:1px solid rgba(0,0,0,0.06)}
+.progress{height:10px;background:#f1f5f9;border-radius:8px;overflow:hidden;margin-top:6px}
+.progress > i{display:block;height:100%;background:var(--accent);width:0%}
+.modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;z-index:200}
+.modal{background:var(--card);width:92%;max-width:720px;border-radius:12px;padding:18px;box-shadow:0 20px 60px rgba(2,6,23,0.4);max-height:86vh;overflow:auto}
+@media(max-width:900px){.main-wrap{padding:0 12px}.sidebar{width:100%}.top-cards{flex-direction:column}}
+</style>
 </head>
 <body>
-  <h2>📘 PDUSU Admin Panel</h2>
 
-  <label>Course:</label>
-  <select id="admCourse">
-    <option>BCA</option>
-    <option>B.Sc</option>
-    <option>BA</option>
-    <option>B.Com</option>
-  </select>
+<header>
+  <div class="header-left">
+    <img id="logo" src="PDUSU-logo.png" alt="PDUSU Logo">
+    <div class="header-title">
+      <h1>🎓 PDUSU EDUCATION</h1>
+      <p>मेहनत ही सफलता की कुंजी है — आगे बढ़ते रहो, छात्रो!</p>
+    </div>
+  </div>
+  <div>
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌞 Light</button>
+  </div>
+</header>
 
-  <label>Semester:</label>
-  <select id="admSem">
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
-    <option value="6">6</option>
-  </select>
+<main class="main-wrap">
+  <aside class="sidebar" aria-label="Useful links">
+    <h3>महत्वपूर्ण लिंक्स</h3>
+    <a class="link" href="https://shekhauniexam.in/" target="_blank">📄 Result</a>
+    <a class="link" href="https://shekhauni.ac.in/Home/Syllabus" target="_blank">📘 Syllabus</a>
+    <a class="link" href="https://shekhauni.ac.in/Home/Examination" target="_blank">📰 University News</a>
+    <a class="link" href="https://www.youtube.com/" target="_blank">▶️ YouTube</a>
+  </aside>
 
-  <label>Subject Name:</label>
-  <input type="text" id="admSubject" placeholder="Enter subject name">
+  <section class="content">
+    <div class="top-cards">
+      <div class="card"><h3>B.Sc</h3><div class="semester-list" id="bscList"></div></div>
+      <div class="card"><h3>B.A.</h3><div class="semester-list" id="baList"></div></div>
+      <div class="card"><h3>B.Com</h3><div class="semester-list" id="bcomList"></div></div>
+    </div>
 
-  <label>YouTube Link (optional):</label>
-  <input type="url" id="admYouTube" placeholder="Paste YouTube video URL">
+    <div id="studentTable" class="table-wrap">
+      <h3>Available Notes & PDFs</h3>
+      <table id="coursesTable">
+        <thead><tr><th>Course</th><th>Semester</th><th>Subject</th><th>YouTube</th><th>PDF</th><th>Uploaded At</th></tr></thead>
+        <tbody id="coursesBody"><tr><td colspan="6" class="note">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+</main>
 
-  <label>Upload PDF (optional):</label>
-  <input type="file" id="admPdfFile" accept="application/pdf">
+<footer style="text-align:center;padding:12px;background:var(--card);color:var(--muted)">© 2025 PDUSU EDUCATION | Designed for Students</footer>
 
-  <button id="uploadBtn" onclick="handleUpload()">Upload & Save</button>
+<div id="modalBackdrop" class="modal-backdrop"><div class="modal" id="modalContent"></div></div>
 
-  <div class="progress"><i></i></div>
-  <p id="adminMsg"></p>
+<script type="module">
+// 🔥 Firebase Config (तुम्हारा नया वाला)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
 
-  <hr>
-  <h3>📚 Uploaded List</h3>
-  <ul id="list"></ul>
+const firebaseConfig = {
+  apiKey: "AIzaSyBiRACgJgwPcn-6t2pFHpOMgYwYhu2eHgM",
+  authDomain: "pdusu-edu.firebaseapp.com",
+  projectId: "pdusu-edu",
+  storageBucket: "pdusu-edu.appspot.com",
+  messagingSenderId: "1049889029840",
+  appId: "1:1049889029840:web:156d84270f60016174a8d5",
+  measurementId: "G-KG0E4QNY9Z"
+};
+const app = initializeApp(firebaseConfig);
+try{ getAnalytics(app); }catch(e){}
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-  <script type="module">
-    // ✅ Firebase SDKs
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-    import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
+const PASSWORD_SHA256 = "77cce9ae9209d01fb54c53a30b682af6815ffafb70174876013cb24436df2ca2"; // Pdusu123
+const COLLECTION = "courses";
 
-    // ✅ Firebase Config (PDUSU project)
-    const firebaseConfig = {
-      apiKey: "AIzaSyBiRACgJgwPcn-6t2pFHpOMgYwYhu2eHgM",
-      authDomain: "pdusu-edu.firebaseapp.com",
-      projectId: "pdusu-edu",
-      storageBucket: "pdusu-edu.appspot.com",
-      messagingSenderId: "1049889029840",
-      appId: "1:1049889029840:web:156d84270f60016174a8d5",
-      measurementId: "G-KG0E4QNY9Z"
-    };
+async function sha256Hex(input){const d=new TextEncoder().encode(input);const h=await crypto.subtle.digest("SHA-256",d);return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function uuid(){return crypto.randomUUID ? crypto.randomUUID() : 'id_'+Date.now();}
 
-    // ✅ Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-    const COLLECTION = "courses";
+const modalBackdrop=document.getElementById('modalBackdrop');
+const modalContent=document.getElementById('modalContent');
+function showModal(html){modalContent.innerHTML=html;modalBackdrop.style.display='flex';}
+function closeModal(){modalBackdrop.style.display='none';}
+modalBackdrop.addEventListener('click',e=>{if(e.target===modalBackdrop)closeModal();});
 
-    // ✅ Generate random ID
-    function uuid() {
-      return "xxxxxx".replace(/x/g, () => Math.floor(Math.random() * 16).toString(16));
-    }
+const root=document.documentElement;
+const themeToggle=document.getElementById('themeToggle');
+function applyTheme(t){if(t==='dark')root.setAttribute('data-theme','dark');else root.removeAttribute('data-theme');themeToggle.textContent=t==='dark'?'🌙 Dark':'🌞 Light';localStorage.setItem('pdusu_theme',t);}
+(function(){const s=localStorage.getItem('pdusu_theme')||'light';applyTheme(s);})();
+themeToggle.addEventListener('click',()=>{const c=root.getAttribute('data-theme')==='dark'?'dark':'light';applyTheme(c==='dark'?'light':'dark');});
 
-    // ✅ Load existing data
-    async function loadAll() {
-      const list = document.getElementById('list');
-      list.innerHTML = '<li>Loading...</li>';
-      const q = query(collection(db, COLLECTION), orderBy("uploadedAt", "desc"));
-      const snap = await getDocs(q);
-      list.innerHTML = '';
-      snap.forEach(doc => {
-        const data = doc.data();
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <b>${data.subject}</b> (${data.course} - Sem ${data.semester})<br>
-          ${data.youtube ? `<a href="${data.youtube}" target="_blank">🎥 YouTube</a>` : ''}
-          ${data.pdfUrl ? ` | <a href="${data.pdfUrl}" target="_blank">📄 PDF</a>` : ''}
-        `;
-        list.appendChild(li);
-      });
-    }
+function renderSemesters(){
+  const map=[{id:'bscList',label:'BSC'},{id:'baList',label:'BA'},{id:'bcomList',label:'BCOM'}];
+  map.forEach(m=>{
+    const el=document.getElementById(m.id);el.innerHTML='';
+    for(let i=1;i<=6;i++){const b=document.createElement('button');b.className='sem-btn';b.textContent='Sem '+i;b.onclick=()=>loadTable(m.label,i);el.appendChild(b);}
+  });
+}
 
-    // ✅ Upload Handler (PDF optional)
-    async function handleUpload() {
-      const course = document.getElementById('admCourse').value;
-      const sem = Number(document.getElementById('admSem').value);
-      const subject = document.getElementById('admSubject').value.trim();
-      const youtube = document.getElementById('admYouTube').value.trim();
-      const fileInput = document.getElementById('admPdfFile');
-      const file = fileInput.files && fileInput.files[0];
-      const adminMsg = document.getElementById('adminMsg');
-      const progressBar = document.querySelector('.progress');
-      const progressBarInner = progressBar.querySelector('i');
+async function fetchAllCourses(){
+  const q=query(collection(db,COLLECTION),orderBy('course'),orderBy('semester'));
+  const snap=await getDocs(q);const items=[];
+  snap.forEach(doc=>{const d=doc.data();items.push({
+    id:doc.id,course:d.course||'',semester:d.semester||0,subject:d.subject||'',youtube:d.youtube||'',pdf:d.pdfUrl||'',uploadedAt:d.uploadedAt?.toDate?.()||null
+  });});
+  return items;
+}
 
-      adminMsg.textContent = '';
+async function renderTable(items){
+  const tbody=document.getElementById('coursesBody');
+  if(!items.length){tbody.innerHTML=`<tr><td colspan="6" class="note">कोई नोट उपलब्ध नहीं है।</td></tr>`;return;}
+  tbody.innerHTML=items.map(it=>`<tr>
+    <td>${esc(it.course)}</td><td>${esc(it.semester)}</td><td>${esc(it.subject)}</td>
+    <td>${it.youtube?`<a href="${esc(it.youtube)}" target="_blank">▶️</a>`:'-'}</td>
+    <td>${it.pdf?`<a href="${esc(it.pdf)}" target="_blank" class="btn btn-primary">📥 Download</a>`:'-'}</td>
+    <td>${it.uploadedAt?esc(it.uploadedAt.toLocaleString()):'-'}</td></tr>`).join('');
+}
 
-      if (!subject) {
-        adminMsg.textContent = '⚠️ कृपया subject name भरें!';
-        return;
-      }
+async function loadAll(){renderTable(await fetchAllCourses());}
+async function loadTable(course,sem){const all=await fetchAllCourses();renderTable(all.filter(i=>i.course.toUpperCase()===course.toUpperCase()&&+i.semester===+sem));}
 
-      // 🟢 अगर PDF नहीं है — direct save
-      if (!file) {
-        try {
-          await addDoc(collection(db, COLLECTION), {
-            course,
-            semester: sem,
-            subject,
-            youtube: youtube || '',
-            pdfUrl: '',
-            uploadedAt: serverTimestamp()
-          });
-          adminMsg.textContent = '✅ Entry saved without PDF!';
-          document.getElementById('admSubject').value = '';
-          document.getElementById('admYouTube').value = '';
-          await loadAll();
-        } catch (err) {
-          adminMsg.textContent = '❌ Error: ' + err.message;
-        }
-        return;
-      }
+let clickCount=0;
+document.getElementById('logo').addEventListener('click',async()=>{clickCount++;if(clickCount===3){clickCount=0;const pwd=prompt("Admin Password डालें:");if(!pwd)return;const h=await sha256Hex(pwd);if(h===PASSWORD_SHA256)openAdmin();else alert("Password गलत है।");}setTimeout(()=>clickCount=0,1500);});
 
-      // 🔵 अगर PDF चुनी गई है — upload to Firebase Storage
-      if (file.type !== 'application/pdf') {
-        adminMsg.textContent = '⚠️ केवल PDF file अपलोड करें';
-        return;
-      }
+function openAdmin(){
+  showModal(`
+    <h2>Admin Panel — Upload PDF</h2>
+    <div><label>Course<select id="admCourse"><option>BSC</option><option>BA</option><option>BCOM</option></select></label></div>
+    <div><label>Semester<select id="admSem"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label></div>
+    <div><label>Subject<input id="admSubject" type="text" style="width:100%"></label></div>
+    <div><label>YouTube Link (optional)<input id="admYouTube" type="url" style="width:100%"></label></div>
+    <div><label>PDF File<input id="admPdfFile" type="file" accept="application/pdf" style="width:100%"></label>
+    <div class="progress" style="display:none"><i></i></div></div>
+    <button id="uploadBtn" class="btn btn-primary">Upload & Save</button>
+    <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+    <div id="adminMsg" class="note"></div>
+  `);
+  document.getElementById('uploadBtn').onclick=handleUpload;
+}
 
-      const path = `courses/${course.toLowerCase()}/sem${sem}/${uuid()}.pdf`;
-      const sRef = storageRef(storage, path);
-      const uploadTask = uploadBytesResumable(sRef, file);
-
-      progressBar.style.display = 'block';
-      progressBarInner.style.width = '0%';
-      document.getElementById('uploadBtn').disabled = true;
-      document.getElementById('uploadBtn').textContent = 'Uploading...';
-
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-          progressBarInner.style.width = percent + '%';
-        },
-        (err) => {
-          adminMsg.textContent = '❌ Upload failed: ' + err.message;
-          progressBar.style.display = 'none';
-          document.getElementById('uploadBtn').disabled = false;
-          document.getElementById('uploadBtn').textContent = 'Upload & Save';
-        },
-        async () => {
-          const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
-          await addDoc(collection(db, COLLECTION), {
-            course,
-            semester: sem,
-            subject,
-            youtube: youtube || '',
-            pdfUrl: downloadUrl,
-            uploadedAt: serverTimestamp()
-          });
-          adminMsg.textContent = '✅ Uploaded and saved successfully!';
-          document.getElementById('admSubject').value = '';
-          document.getElementById('admYouTube').value = '';
-          document.getElementById('admPdfFile').value = '';
-          progressBar.style.display = 'none';
-          document.getElementById('uploadBtn').disabled = false;
-          document.getElementById('uploadBtn').textContent = 'Upload & Save';
-          await loadAll();
-        }
-      );
-    }
-
-    // 🔃 Load list on start
-    loadAll();
-  </script>
+async function handleUpload(){
+  const c=document.getElementById('admCourse').value;
+  const s=+document.getElementById('admSem').value;
+  const subj=document.getElementById('admSubject').value.trim();
+  const yt=document.getElementById('admYouTube').value.trim();
+  const f=document.getElementById('admPdfFile').files[0];
+  const msg=document.getElementById('adminMsg');
+  if(!subj)return msg.textContent='कृपया Subject डालें';
+  if(!f)return msg.textContent='कृपया PDF चुनें';
+  const progress=modalContent.querySelector('.progress');progress.style.display='block';
+  const bar=progress.querySelector('i');
+  const path=`courses/${c}/sem${s}/${uuid()}.pdf`;
+  const sRef=storageRef(storage,path);
+  const uploadTask=uploadBytesResumable(sRef,f);
+  uploadTask.on('state_changed',snap=>{bar.style.width=(snap.bytesTransferred/snap.totalBytes*100)+'%';},err=>msg.textContent=err.message,async()=>{
+    const url=await getDownloadURL(uploadTask.snapshot.ref);
+    await addDoc(collection(db,COLLECTION),{course:c,semester:s,subject:subj,youtube:yt,pdfUrl:url,uploadedAt:serverTimestamp()});
+    msg.textContent='✅ Uploaded Successfully!';loadAll();
+  });
+}
+renderSemesters();loadAll();
+</script>
 </body>
 </html>
