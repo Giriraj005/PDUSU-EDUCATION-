@@ -151,6 +151,34 @@ function renderSemesters(){
     }
   });
 }
+  /* Dark theme overrides */
+[data-theme="dark"] {
+  --bg:#0b1220;
+  --text:#e6eef8;
+  --card:#0f1724;
+  --muted:#94a3b8;
+  --accent:#3b82f6;
+  --glass:rgba(255,255,255,0.03);
+}
+
+/* Dark theme buttons and table */
+[data-theme="dark"] .sem-btn {
+  background:#1a1f30;
+  color:#e6eef8;
+}
+[data-theme="dark"] .sem-btn:hover {
+  background: rgba(59,130,246,0.2);
+}
+[data-theme="dark"] table, 
+[data-theme="dark"] table th, 
+[data-theme="dark"] table td {
+  color:#e6eef8;
+  border-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .table-wrap {
+  background:#0f1724;
+}
+
 
 /* ---------------- Render table ---------------- */
 function loadTable(course, sem){
@@ -171,6 +199,7 @@ function loadTable(course, sem){
     </tr>
   `).join('');
 }
+  
 
 /* Init */
 renderSemesters();
