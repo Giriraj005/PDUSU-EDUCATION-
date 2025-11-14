@@ -9,7 +9,9 @@
 :root{
   --bg:#f8fafc;--text:#0f172a;--card:#fff;--muted:#475569;--accent:#2563eb;--glass:rgba(255,255,255,0.6);
 }
-[data-theme="dark"]{--bg:#0b1220;--text:#e6eef8;--card:#0f1724;--muted:#94a3b8;--accent:#3b82f6;--glass:rgba(255,255,255,0.03)}
+[data-theme="dark"]{
+  --bg:#0b1220;--text:#e6eef8;--card:#0f1724;--muted:#94a3b8;--accent:#3b82f6;--glass:rgba(255,255,255,0.03);
+}
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
 header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;background:linear-gradient(90deg,#6366f1,#ec4899,#f59e0b);color:#fff}
@@ -35,6 +37,13 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 thead th{position:sticky;top:0;background:var(--card);padding:10px;text-align:left;border-bottom:1px solid rgba(0,0,0,0.06)}
 tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
 .btn-primary{background:var(--accent);color:#fff;padding:4px 8px;border-radius:6px;text-decoration:none}
+
+/* Dark theme fixes for buttons and table */
+[data-theme="dark"] .sem-btn{background:#1a1f30;color:#e6eef8}
+[data-theme="dark"] .sem-btn:hover{background: rgba(59,130,246,0.2)}
+[data-theme="dark"] table, [data-theme="dark"] table th, [data-theme="dark"] table td{color:#e6eef8;border-color: rgba(255,255,255,0.1)}
+[data-theme="dark"] .table-wrap{background:#0f1724}
+
 @media(max-width:900px){.main-wrap{padding:0 12px}.sidebar{width:100%}.top-cards{flex-direction:column}}
 </style>
 </head>
@@ -59,7 +68,7 @@ tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
     <a class="link" href="https://shekhauniexam.in/" target="_blank" rel="noopener">📄 Result</a>
     <a class="link" href="https://shekhauni.ac.in/Home/Syllabus" target="_blank" rel="noopener">📘 Syllabus</a>
     <a class="link" href="https://shekhauni.ac.in/Home/Examination" target="_blank" rel="noopener">📰 University News</a>
-    <a class="link" href="https://youtube.com/@piyushpareeksikar?si=tFXQ64JzHe_cUDbo" target="_blank" rel="noopener">▶️ YouTube</a>
+    <a class="link" href="https://www.youtube.com/" target="_blank" rel="noopener">▶️ YouTube</a>
   </aside>
 
   <section class="content" aria-live="polite">
@@ -90,10 +99,10 @@ tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
   </section>
 </main>
 
-<footer style="text-align:center;padding:12px;background:var(--card);color:var(--muted)">© 2025 PDUSU EDUCATION | </footer>
+<footer style="text-align:center;padding:12px;background:var(--card);color:var(--muted)">© 2025 PDUSU EDUCATION | Offline Demo</footer>
 
 <script>
-/* ---------------- Theme toggle ---------------- */
+/* Theme toggle */
 const root = document.documentElement;
 const themeToggle = document.getElementById('themeToggle');
 function applyTheme(t){
@@ -108,26 +117,20 @@ themeToggle.addEventListener('click', ()=>{
   applyTheme(current==='dark'?'light':'dark');
 });
 
-/* ---------------- Full static dataset ---------------- */
+/* Static notes dataset */
 const notes = [
-  /* B.Sc semesters 1-6 */
   {course:'BSC',semester:1,subject:'Physics',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-01-10'},
-  {course:'BSC',semester:1,subject:'Englizh',youtube:'https://youtu.be/X7WnuJstzVc?si=t-VSBprBVQnm1VJv',pdf:'#',uploadedAt:'2025-11-14'},
-  {course:'BSC',semester:1,subject:'Mathematics',youtube:'',pdf:'#',uploadedAt:'2025-01-11'},
-  {course:'BSC',semester:2,subject:'Chemistry',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-02-15'},
-  {course:'BSC',semester:2,subject:'Biology',youtube:'',pdf:'#',uploadedAt:'2025-02-16'},
+  {course:'BSC',semester:2,subject:'Chemistry',youtube:'',pdf:'#',uploadedAt:'2025-02-15'},
   {course:'BSC',semester:3,subject:'Computer Science',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-03-10'},
   {course:'BSC',semester:4,subject:'Electronics',youtube:'',pdf:'#',uploadedAt:'2025-04-05'},
   {course:'BSC',semester:5,subject:'Microbiology',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-05-01'},
   {course:'BSC',semester:6,subject:'Genetics',youtube:'',pdf:'#',uploadedAt:'2025-06-12'},
-  /* B.A semesters 1-6 */
   {course:'BA',semester:1,subject:'History',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-01-05'},
   {course:'BA',semester:2,subject:'Political Science',youtube:'',pdf:'#',uploadedAt:'2025-02-12'},
   {course:'BA',semester:3,subject:'Geography',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-03-15'},
   {course:'BA',semester:4,subject:'Sociology',youtube:'',pdf:'#',uploadedAt:'2025-04-08'},
   {course:'BA',semester:5,subject:'Psychology',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-05-22'},
   {course:'BA',semester:6,subject:'Philosophy',youtube:'',pdf:'#',uploadedAt:'2025-06-30'},
-  /* B.Com semesters 1-6 */
   {course:'BCOM',semester:1,subject:'Accountancy',youtube:'',pdf:'#',uploadedAt:'2025-01-20'},
   {course:'BCOM',semester:2,subject:'Economics',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-02-25'},
   {course:'BCOM',semester:3,subject:'Business Law',youtube:'',pdf:'#',uploadedAt:'2025-03-18'},
@@ -136,7 +139,7 @@ const notes = [
   {course:'BCOM',semester:6,subject:'Auditing',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-06-15'}
 ];
 
-/* ---------------- Semester buttons ---------------- */
+/* Semester buttons */
 function renderSemesters(){
   const map = [{id:'bscList',label:'BSC'},{id:'baList',label:'BA'},{id:'bcomList',label:'BCOM'}];
   map.forEach(m=>{
@@ -151,36 +154,8 @@ function renderSemesters(){
     }
   });
 }
-  /* Dark theme overrides */
-[data-theme="dark"] {
-  --bg:#0b1220;
-  --text:#e6eef8;
-  --card:#0f1724;
-  --muted:#94a3b8;
-  --accent:#3b82f6;
-  --glass:rgba(255,255,255,0.03);
-}
 
-/* Dark theme buttons and table */
-[data-theme="dark"] .sem-btn {
-  background:#1a1f30;
-  color:#e6eef8;
-}
-[data-theme="dark"] .sem-btn:hover {
-  background: rgba(59,130,246,0.2);
-}
-[data-theme="dark"] table, 
-[data-theme="dark"] table th, 
-[data-theme="dark"] table td {
-  color:#e6eef8;
-  border-color: rgba(255,255,255,0.1);
-}
-[data-theme="dark"] .table-wrap {
-  background:#0f1724;
-}
-
-
-/* ---------------- Render table ---------------- */
+/* Render table */
 function loadTable(course, sem){
   const filtered = notes.filter(n => n.course===course && n.semester===sem);
   const tbody = document.getElementById('coursesBody');
@@ -199,7 +174,6 @@ function loadTable(course, sem){
     </tr>
   `).join('');
 }
-  
 
 /* Init */
 renderSemesters();
