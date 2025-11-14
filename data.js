@@ -1,10 +1,9 @@
 // data.js
 const notes = [
   /* B.Sc semesters */
-  {course:'BSC', semester:1, subject:'Physics', youtube:'https://youtu.be/Sz51DaAjh4I?si=0OV0qQxOmYYrj-7A', pdf:'https://acrobat.adobe.com/id/urn:aaid:sc:AP:5d39907f-3c57-4d0d-9132-31064a4baa95', uploadedAt:'2025-01-10'},
-  {course:'BSC',semester:1,subject:'Computer,youtube:'https://youtu.be/ZOCIrB6MtYo?si=bZbHv4JJw1PeViB8',pdf:'#',uploadedAt:'2025-01-10'},
-  {course:'BSC', semester:2, subject:'Chemistry', youtube:'https://youtu.be/XVjfqeeTMig?si=18GZiJ-Lck16sdsY', pdf:'#', uploadedAt:'2025-02-15'},
-  {course:'BSC', semester:3, subject:'Computer Application, youtube:'', pdf:'#', uploadedAt:'2025-03-10'},
+  {course:'BSC', semester:1, subject:'Physics', youtube:'https://youtu.be/Sz51DaAjh4I?si=0OV0qQxOmYYrj-7A', pdf:'#', uploadedAt:'2025-01-10'},
+  {course:'BSC', semester:2, subject:'Chemistry', youtube:'', pdf:'#', uploadedAt:'2025-02-15'},
+  {course:'BSC', semester:3, subject:'Computer Science', youtube:'https://youtube.com', pdf:'#', uploadedAt:'2025-03-10'},
   {course:'BSC', semester:4, subject:'Electronics', youtube:'', pdf:'#', uploadedAt:'2025-04-05'},
   {course:'BSC', semester:5, subject:'Microbiology', youtube:'https://youtube.com', pdf:'#', uploadedAt:'2025-05-01'},
   {course:'BSC', semester:6, subject:'Genetics', youtube:'', pdf:'#', uploadedAt:'2025-06-12'},
