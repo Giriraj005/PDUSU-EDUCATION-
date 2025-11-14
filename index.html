@@ -4,7 +4,6 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>🎓 PDUSU EDUCATION</title>
-<meta name="theme-color" content="#2563eb" />
 <style>
 :root{
   --bg:#f8fafc;--text:#0f172a;--card:#fff;--muted:#475569;--accent:#2563eb;--glass:rgba(255,255,255,0.6);
@@ -12,8 +11,7 @@
 [data-theme="dark"]{
   --bg:#0b1220;--text:#e6eef8;--card:#0f1724;--muted:#94a3b8;--accent:#3b82f6;--glass:rgba(255,255,255,0.03);
 }
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
 header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;background:linear-gradient(90deg,#6366f1,#ec4899,#f59e0b);color:#fff}
 .header-left{display:flex;gap:14px;align-items:center}
 #logo{width:80px;height:80px;border-radius:10px;background:#fff;padding:6px;cursor:pointer;object-fit:cover;box-shadow:0 6px 18px rgba(0,0,0,0.12)}
@@ -38,7 +36,7 @@ thead th{position:sticky;top:0;background:var(--card);padding:10px;text-align:le
 tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
 .btn-primary{background:var(--accent);color:#fff;padding:4px 8px;border-radius:6px;text-decoration:none}
 
-/* Dark theme fixes for buttons and table */
+/* Dark theme fixes */
 [data-theme="dark"] .sem-btn{background:#1a1f30;color:#e6eef8}
 [data-theme="dark"] .sem-btn:hover{background: rgba(59,130,246,0.2)}
 [data-theme="dark"] table, [data-theme="dark"] table th, [data-theme="dark"] table td{color:#e6eef8;border-color: rgba(255,255,255,0.1)}
@@ -58,20 +56,20 @@ tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
     </div>
   </div>
   <div>
-    <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌞 Light</button>
+    <button id="themeToggle" class="theme-toggle">🌞 Light</button>
   </div>
 </header>
 
 <main class="main-wrap">
-  <aside class="sidebar" aria-label="Useful links">
+  <aside class="sidebar">
     <h3>महत्वपूर्ण लिंक्स</h3>
-    <a class="link" href="https://shekhauniexam.in/" target="_blank" rel="noopener">📄 Result</a>
-    <a class="link" href="https://shekhauni.ac.in/Home/Syllabus" target="_blank" rel="noopener">📘 Syllabus</a>
-    <a class="link" href="https://shekhauni.ac.in/Home/Examination" target="_blank" rel="noopener">📰 University News</a>
-    <a class="link" href="https://www.youtube.com/" target="_blank" rel="noopener">▶️ YouTube</a>
+    <a class="link" href="#" target="_blank">📄 Result</a>
+    <a class="link" href="#" target="_blank">📘 Syllabus</a>
+    <a class="link" href="#" target="_blank">📰 University News</a>
+    <a class="link" href="#" target="_blank">▶️ YouTube</a>
   </aside>
 
-  <section class="content" aria-live="polite">
+  <section class="content">
     <div class="top-cards">
       <div class="card">
         <h3>B.Sc</h3>
@@ -89,7 +87,7 @@ tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
 
     <div id="studentTable" class="table-wrap">
       <h3>Available Notes & PDFs</h3>
-      <table id="coursesTable">
+      <table>
         <thead>
           <tr><th>Course</th><th>Semester</th><th>Subject</th><th>YouTube</th><th>PDF</th><th>Uploaded At</th></tr>
         </thead>
@@ -99,7 +97,10 @@ tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
   </section>
 </main>
 
-<footer style="text-align:center;padding:12px;background:var(--card);color:var(--muted)">© 2025 PDUSU EDUCATION | Offline Demo</footer>
+<footer style="text-align:center;padding:12px;background:var(--card);color:var(--muted)">© 2025 PDUSU EDUCATION</footer>
+
+<!-- Include data.js -->
+<script src="data.js"></script>
 
 <script>
 /* Theme toggle */
@@ -116,28 +117,6 @@ themeToggle.addEventListener('click', ()=>{
   const current = root.getAttribute('data-theme')==='dark' ? 'dark' : 'light';
   applyTheme(current==='dark'?'light':'dark');
 });
-
-/* Static notes dataset */
-const notes = [
-  {course:'BSC',semester:1,subject:'Physics',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-01-10'},
-  {course:'BSC',semester:2,subject:'Chemistry',youtube:'',pdf:'#',uploadedAt:'2025-02-15'},
-  {course:'BSC',semester:3,subject:'Computer Science',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-03-10'},
-  {course:'BSC',semester:4,subject:'Electronics',youtube:'',pdf:'#',uploadedAt:'2025-04-05'},
-  {course:'BSC',semester:5,subject:'Microbiology',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-05-01'},
-  {course:'BSC',semester:6,subject:'Genetics',youtube:'',pdf:'#',uploadedAt:'2025-06-12'},
-  {course:'BA',semester:1,subject:'History',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-01-05'},
-  {course:'BA',semester:2,subject:'Political Science',youtube:'',pdf:'#',uploadedAt:'2025-02-12'},
-  {course:'BA',semester:3,subject:'Geography',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-03-15'},
-  {course:'BA',semester:4,subject:'Sociology',youtube:'',pdf:'#',uploadedAt:'2025-04-08'},
-  {course:'BA',semester:5,subject:'Psychology',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-05-22'},
-  {course:'BA',semester:6,subject:'Philosophy',youtube:'',pdf:'#',uploadedAt:'2025-06-30'},
-  {course:'BCOM',semester:1,subject:'Accountancy',youtube:'',pdf:'#',uploadedAt:'2025-01-20'},
-  {course:'BCOM',semester:2,subject:'Economics',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-02-25'},
-  {course:'BCOM',semester:3,subject:'Business Law',youtube:'',pdf:'#',uploadedAt:'2025-03-18'},
-  {course:'BCOM',semester:4,subject:'Management',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-04-14'},
-  {course:'BCOM',semester:5,subject:'Taxation',youtube:'',pdf:'#',uploadedAt:'2025-05-28'},
-  {course:'BCOM',semester:6,subject:'Auditing',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-06-15'}
-];
 
 /* Semester buttons */
 function renderSemesters(){
@@ -169,7 +148,7 @@ function loadTable(course, sem){
       <td>${n.semester}</td>
       <td>${n.subject}</td>
       <td>${n.youtube ? `<a href="${n.youtube}" target="_blank">▶️ Open</a>` : '-'}</td>
-      <td>${n.pdf ? `<a href="${n.pdf}" class="btn-primary">📥 Download</a>` : '-'}</td>
+      <td>${n.pdf ? `<a href="${n.pdf}" class="btn-primary" target="_blank">📥 Download</a>` : '-'}</td>
       <td>${n.uploadedAt}</td>
     </tr>
   `).join('');
@@ -177,7 +156,7 @@ function loadTable(course, sem){
 
 /* Init */
 renderSemesters();
-loadTable('BSC',1); // default view
+loadTable('BSC',1);
 </script>
 </body>
 </html>
