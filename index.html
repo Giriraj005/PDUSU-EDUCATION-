@@ -30,23 +30,11 @@ header{display:flex;justify-content:space-between;align-items:center;padding:18p
 .sem-btn{padding:8px 12px;border-radius:8px;border:none;background:#f1f5f9;color:var(--text);cursor:pointer;font-weight:700}
 .sem-btn:hover{background:rgba(37,99,235,0.08)}
 .note{font-size:13px;color:var(--muted);margin-top:8px}
-
-/* Table for student view */
 .table-wrap{background:var(--card);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.06);overflow:auto}
 table{width:100%;border-collapse:collapse;font-size:14px}
 thead th{position:sticky;top:0;background:var(--card);padding:10px;text-align:left;border-bottom:1px solid rgba(0,0,0,0.06)}
 tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
-.btn{padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-ghost{background:transparent;border:1px solid rgba(0,0,0,0.06)}
-.progress{height:10px;background:#f1f5f9;border-radius:8px;overflow:hidden;margin-top:6px}
-.progress > i{display:block;height:100%;background:var(--accent);width:0%}
-
-/* modal */
-.modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;z-index:200}
-.modal{background:var(--card);width:92%;max-width:720px;border-radius:12px;padding:18px;box-shadow:0 20px 60px rgba(2,6,23,0.4);max-height:86vh;overflow:auto}
-
-/* responsive */
+.btn-primary{background:var(--accent);color:#fff;padding:4px 8px;border-radius:6px;text-decoration:none}
 @media(max-width:900px){.main-wrap{padding:0 12px}.sidebar{width:100%}.top-cards{flex-direction:column}}
 </style>
 </head>
@@ -72,7 +60,6 @@ tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
     <a class="link" href="https://shekhauni.ac.in/Home/Syllabus" target="_blank" rel="noopener">📘 Syllabus</a>
     <a class="link" href="https://shekhauni.ac.in/Home/Examination" target="_blank" rel="noopener">📰 University News</a>
     <a class="link" href="https://www.youtube.com/" target="_blank" rel="noopener">▶️ YouTube</a>
-    
   </aside>
 
   <section class="content" aria-live="polite">
@@ -93,85 +80,62 @@ tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
 
     <div id="studentTable" class="table-wrap">
       <h3>Available Notes & PDFs</h3>
-      <table id="coursesTable" aria-describedby="List of uploaded PDFs">
+      <table id="coursesTable">
         <thead>
           <tr><th>Course</th><th>Semester</th><th>Subject</th><th>YouTube</th><th>PDF</th><th>Uploaded At</th></tr>
         </thead>
-        <tbody id="coursesBody"><tr><td colspan="6" class="note">Loading...</td></tr></tbody>
+        <tbody id="coursesBody"></tbody>
       </table>
     </div>
   </section>
 </main>
 
-<footer style="text-align:center;padding:12px;background:var(--card);color:var(--muted)">© 2025 PDUSU EDUCATION | Designed for Students</footer>
+<footer style="text-align:center;padding:12px;background:var(--card);color:var(--muted)">© 2025 PDUSU EDUCATION | Offline Demo</footer>
 
-<!-- Modal -->
-<div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
-  <div class="modal" id="modalContent" role="dialog" aria-modal="true"></div>
-</div>
-
-<!-- Firebase + App script -->
-<script type="module">
-/* ================== Firebase Config ==================
-   (आपने जो दिया था वही config यहाँ embed कर रहा हूँ)
-   अगर आपने अलग config बनायी है तो इसे बदल दें */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
-import {
-  getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-import {
-  getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyADiTKwpQ2uW5DTo8lUp44TDAbSPQ3ntMQ",
-  authDomain: "pdusu-education-4503b.firebaseapp.com",
-  projectId: "pdusu-education-4503b",
-  storageBucket: "pdusu-education-4503b.appspot.com",   // 
-  messagingSenderId: "186812462719",
-  appId: "1:186812462719:web:2108c8d68c12ff2b9f314a",
-  measurementId: "G-4YT9MXGYWS"
-};
-
-
-const app = initializeApp(firebaseConfig);
-try{ getAnalytics(app);}catch(e){/* analytics may fail on local file, ignore */ }
-const db = getFirestore(app);
-const storage = getStorage(app);
-
-/* ================== App logic ================== */
-
-/* Config */
-const PASSWORD_SHA256 = "77cce9ae9209d01fb54c53a30b682af6815ffafb70174876013cb24436df2ca2"; // Pdusu123
-const COLLECTION = "courses";
-
-/* Helpers */
-async function sha256Hex(input){
-  const enc = new TextEncoder();
-  const data = enc.encode(input);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function uuid(){ if(window.crypto && crypto.randomUUID) return crypto.randomUUID(); return 'id_'+Date.now(); }
-
-/* Modal helpers */
-const modalBackdrop = document.getElementById('modalBackdrop');
-const modalContent = document.getElementById('modalContent');
-function showModal(html){ modalContent.innerHTML = html; modalBackdrop.style.display = 'flex'; modalBackdrop.setAttribute('aria-hidden','false'); }
-function closeModal(){ modalBackdrop.style.display = 'none'; modalBackdrop.setAttribute('aria-hidden','true'); }
-modalBackdrop.addEventListener('click', (e)=>{ if(e.target===modalBackdrop) closeModal(); });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
-
-/* Theme system (same as before) */
+<script>
+/* ---------------- Theme toggle ---------------- */
 const root = document.documentElement;
 const themeToggle = document.getElementById('themeToggle');
-function applyTheme(t){ if(t==='dark') root.setAttribute('data-theme','dark'); else root.removeAttribute('data-theme'); themeToggle.textContent = t==='dark'?'🌙 Dark':'🌞 Light'; localStorage.setItem('pdusu_theme', t); }
+function applyTheme(t){
+  if(t==='dark') root.setAttribute('data-theme','dark');
+  else root.removeAttribute('data-theme');
+  themeToggle.textContent = t==='dark'?'🌙 Dark':'🌞 Light';
+  localStorage.setItem('pdusu_theme', t);
+}
 (function(){ const saved = localStorage.getItem('pdusu_theme')||'light'; applyTheme(saved); })();
-themeToggle.addEventListener('click', ()=>{ const current = root.getAttribute('data-theme')==='dark' ? 'dark' : 'light'; applyTheme(current==='dark'?'light':'dark'); });
+themeToggle.addEventListener('click', ()=>{
+  const current = root.getAttribute('data-theme')==='dark' ? 'dark' : 'light';
+  applyTheme(current==='dark'?'light':'dark');
+});
 
-/* Render semester buttons */
+/* ---------------- Full static dataset ---------------- */
+const notes = [
+  /* B.Sc semesters 1-6 */
+  {course:'BSC',semester:1,subject:'Physics',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-01-10'},
+  {course:'BSC',semester:1,subject:'Mathematics',youtube:'',pdf:'#',uploadedAt:'2025-01-11'},
+  {course:'BSC',semester:2,subject:'Chemistry',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-02-15'},
+  {course:'BSC',semester:2,subject:'Biology',youtube:'',pdf:'#',uploadedAt:'2025-02-16'},
+  {course:'BSC',semester:3,subject:'Computer Science',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-03-10'},
+  {course:'BSC',semester:4,subject:'Electronics',youtube:'',pdf:'#',uploadedAt:'2025-04-05'},
+  {course:'BSC',semester:5,subject:'Microbiology',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-05-01'},
+  {course:'BSC',semester:6,subject:'Genetics',youtube:'',pdf:'#',uploadedAt:'2025-06-12'},
+  /* B.A semesters 1-6 */
+  {course:'BA',semester:1,subject:'History',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-01-05'},
+  {course:'BA',semester:2,subject:'Political Science',youtube:'',pdf:'#',uploadedAt:'2025-02-12'},
+  {course:'BA',semester:3,subject:'Geography',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-03-15'},
+  {course:'BA',semester:4,subject:'Sociology',youtube:'',pdf:'#',uploadedAt:'2025-04-08'},
+  {course:'BA',semester:5,subject:'Psychology',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-05-22'},
+  {course:'BA',semester:6,subject:'Philosophy',youtube:'',pdf:'#',uploadedAt:'2025-06-30'},
+  /* B.Com semesters 1-6 */
+  {course:'BCOM',semester:1,subject:'Accountancy',youtube:'',pdf:'#',uploadedAt:'2025-01-20'},
+  {course:'BCOM',semester:2,subject:'Economics',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-02-25'},
+  {course:'BCOM',semester:3,subject:'Business Law',youtube:'',pdf:'#',uploadedAt:'2025-03-18'},
+  {course:'BCOM',semester:4,subject:'Management',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-04-14'},
+  {course:'BCOM',semester:5,subject:'Taxation',youtube:'',pdf:'#',uploadedAt:'2025-05-28'},
+  {course:'BCOM',semester:6,subject:'Auditing',youtube:'https://youtube.com',pdf:'#',uploadedAt:'2025-06-15'}
+];
+
+/* ---------------- Semester buttons ---------------- */
 function renderSemesters(){
   const map = [{id:'bscList',label:'BSC'},{id:'baList',label:'BA'},{id:'bcomList',label:'BCOM'}];
   map.forEach(m=>{
@@ -187,208 +151,29 @@ function renderSemesters(){
   });
 }
 
-/* Load courses from Firestore and render table (optionally filter) */
-async function fetchAllCourses(){
-  const colRef = collection(db, COLLECTION);
-  // ordered by course, semester
-  const q = query(colRef, orderBy('course'), orderBy('semester'));
-  const snap = await getDocs(q);
-  const items = [];
-  snap.forEach(doc => {
-    const d = doc.data();
-    items.push({
-      id: doc.id,
-      course: d.course || d.stream || '',
-      semester: d.semester || d.sem || 0,
-      subject: d.subject || d.subject_name || d.class_name || '',
-      youtube: d.youtube_link || d.youtube || '',
-      pdf: d.pdfUrl || d.pdf_url || d.pdf || '',
-      uploadedAt: d.uploadedAt ? d.uploadedAt.toDate ? d.uploadedAt.toDate() : new Date(d.uploadedAt) : null
-    });
-  });
-  return items;
-}
-
-async function renderTable(items){
+/* ---------------- Render table ---------------- */
+function loadTable(course, sem){
+  const filtered = notes.filter(n => n.course===course && n.semester===sem);
   const tbody = document.getElementById('coursesBody');
-  if(!items || items.length===0){
+  if(filtered.length===0){
     tbody.innerHTML = `<tr><td colspan="6" class="note">कोई नोट उपलब्ध नहीं है।</td></tr>`;
     return;
   }
-  let html = '';
-  items.forEach(it=>{
-    html += `<tr>
-      <td>${esc(it.course)}</td>
-      <td>${esc(it.semester)}</td>
-      <td>${esc(it.subject)}</td>
-      <td>${it.youtube? `<a href="${esc(it.youtube)}" target="_blank">▶️ Open</a>` : '-'}</td>
-      <td>${it.pdf? `<a href="${esc(it.pdf)}" target="_blank" class="btn btn-primary">📥 Download</a>` : '-'}</td>
-      <td>${it.uploadedAt ? esc(it.uploadedAt.toLocaleString()) : '-'}</td>
-    </tr>`;
-  });
-  tbody.innerHTML = html;
+  tbody.innerHTML = filtered.map(n => `
+    <tr>
+      <td>${n.course}</td>
+      <td>${n.semester}</td>
+      <td>${n.subject}</td>
+      <td>${n.youtube ? `<a href="${n.youtube}" target="_blank">▶️ Open</a>` : '-'}</td>
+      <td>${n.pdf ? `<a href="${n.pdf}" class="btn-primary">📥 Download</a>` : '-'}</td>
+      <td>${n.uploadedAt}</td>
+    </tr>
+  `).join('');
 }
 
-/* Load and show all by default */
-async function loadAll(){
-  const items = await fetchAllCourses();
-  await renderTable(items);
-}
-async function loadTable(course, sem){
-  const all = await fetchAllCourses();
-  const filtered = all.filter(i => i.course.toUpperCase() === course.toUpperCase() && Number(i.semester) === Number(sem));
-  await renderTable(filtered);
-  // scroll into view
-  document.getElementById('studentTable').scrollIntoView({behavior:'smooth'});
-}
-
-/* Admin trigger (triple click logo) */
-let clickCount = 0;
-document.getElementById('logo').addEventListener('click', async ()=>{
-  clickCount++;
-  if(clickCount===3){
-    clickCount=0;
-    const pwd = prompt("Admin Password डालें:");
-    if(!pwd) return;
-    const h = await sha256Hex(pwd);
-    if(h === PASSWORD_SHA256) openAdmin();
-    else alert("Password गलत है।");
-  }
-  setTimeout(()=>clickCount=0,1500);
-});
-
-/* Open Admin Panel (with upload form) */
-function openAdmin(){
-  showModal(`
-    <h2>Admin Panel — Upload PDF</h2>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <label style="flex:1">
-        Course<br>
-        <select id="admCourse"><option value="BSC">BSC</option><option value="BA">BA</option><option value="BCOM">BCOM</option></select>
-      </label>
-      <label style="flex:1">
-        Semester<br>
-        <select id="admSem"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
-      </label>
-    </div>
-    <div style="margin-top:10px">
-      <label>Subject name<br><input id="admSubject" type="text" placeholder="Subject name" style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee"></label>
-    </div>
-    <div style="margin-top:10px">
-      <label>YouTube Link (optional)<br><input id="admYouTube" type="url" placeholder="https://www.youtube.com/..." style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee"></label>
-    </div>
-    <div style="margin-top:10px">
-      <label>PDF File (required)<br><input id="admPdfFile" type="file" accept="application/pdf" style="width:100%"></label>
-      <div class="progress" style="display:none;margin-top:8px"><i style="width:0%"></i></div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
-      <button class="btn btn-primary" id="uploadBtn">Upload & Save</button>
-      <button class="btn btn-ghost" onclick="closeModal()">Close</button>
-      <button class="btn btn-ghost" onclick="openList()">Manage Entries</button>
-    </div>
-    <hr>
-    <div id="adminMsg" class="note"></div>
-  `);
-
-  document.getElementById('uploadBtn').onclick = handleUpload;
-}
-
-/* Manage existing entries (list) */
-async function openList(){
-  const items = await fetchAllCourses();
-  let listHtml = '<div style="max-height:300px;overflow:auto">';
-  if(items.length===0) listHtml += '<p class="note">कोई एंट्री नहीं मिली।</p>';
-  items.slice().reverse().forEach(it=>{
-    listHtml += `<div style="padding:8px;border-bottom:1px solid rgba(0,0,0,0.04)">
-      <strong>${esc(it.course)} Sem ${esc(it.semester)}</strong> — ${esc(it.subject)}<br>
-      ${it.youtube?`<a href="${esc(it.youtube)}" target="_blank">YouTube</a>`:''}
-      ${it.pdf?` | <a href="${esc(it.pdf)}" target="_blank">PDF</a>`:''}
-    </div>`;
-  });
-  listHtml += '</div>';
-  showModal(`<h3>Existing Entries</h3>${listHtml}<div style="margin-top:10px"><button class="btn btn-ghost" onclick="openAdmin()">Back</button></div>`);
-}
-
-/* Handle PDF upload -> Storage -> getDownloadURL -> add doc to Firestore */
-async function handleUpload(){
-  const course = document.getElementById('admCourse').value;
-  const sem = Number(document.getElementById('admSem').value);
-  const subject = document.getElementById('admSubject').value.trim();
-  const youtube = document.getElementById('admYouTube').value.trim();
-  const fileInput = document.getElementById('admPdfFile');
-  const file = fileInput.files && fileInput.files[0];
-
-  const adminMsg = document.getElementById('adminMsg');
-  adminMsg.textContent = '';
-
-  if(!subject){ adminMsg.textContent = 'कृपया Subject name भरें'; return; }
-  if(!file){ adminMsg.textContent = 'कृपया PDF file चुनें'; return; }
-  if(file.type !== 'application/pdf'){ adminMsg.textContent = 'कृपया केवल PDF फाइल अपलोड करें'; return; }
-
-  // prepare UI
-  const progressBar = modalContent.querySelector('.progress');
-  const progressBarInner = progressBar.querySelector('i');
-  progressBar.style.display = 'block';
-  progressBarInner.style.width = '0%';
-  document.getElementById('uploadBtn').disabled = true;
-  document.getElementById('uploadBtn').textContent = 'Uploading...';
-
-  try{
-    // create storage path: courses/{course}/sem{sem}/{uuid}.pdf
-    const path = `courses/${course.toLowerCase()}/sem${sem}/${uuid()}.pdf`;
-    const sRef = storageRef(storage, path);
-    const uploadTask = uploadBytesResumable(sRef, file);
-
-    // wait for progress & completion
-    uploadTask.on('state_changed',
-      (snapshot) => {
-        const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-        progressBarInner.style.width = percent + '%';
-      },
-      (err) => {
-        console.error(err);
-        adminMsg.textContent = 'Upload failed: ' + err.message;
-        document.getElementById('uploadBtn').disabled = false;
-        document.getElementById('uploadBtn').textContent = 'Upload & Save';
-      },
-      async () => {
-        // complete
-        const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
-        // save metadata to Firestore
-        const docRef = await addDoc(collection(db, COLLECTION), {
-          course: course,
-          semester: sem,
-          subject: subject,
-          youtube: youtube || '',
-          pdfUrl: downloadUrl,
-          uploadedAt: serverTimestamp()
-        });
-        adminMsg.textContent = 'Uploaded and saved successfully!';
-        // reset inputs
-        document.getElementById('admSubject').value = '';
-        document.getElementById('admYouTube').value = '';
-        document.getElementById('admPdfFile').value = '';
-        progressBar.style.display = 'none';
-        document.getElementById('uploadBtn').disabled = false;
-        document.getElementById('uploadBtn').textContent = 'Upload & Save';
-        // refresh main table
-        await loadAll();
-        // show list or success
-        openList();
-      }
-    );
-  }catch(err){
-    console.error(err);
-    adminMsg.textContent = 'Error: ' + err.message;
-    document.getElementById('uploadBtn').disabled = false;
-    document.getElementById('uploadBtn').textContent = 'Upload & Save';
-  }
-}
-
-/* ---------------- Init ---------------- */
+/* Init */
 renderSemesters();
-loadAll();
-
+loadTable('BSC',1); // default view
 </script>
 </body>
 </html>
